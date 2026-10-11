@@ -2,7 +2,7 @@ using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 public interface IWorkbookRenderer
 {
@@ -14,7 +14,7 @@ public sealed class WorkbookRenderer : IWorkbookRenderer
 {
     public byte[] Render(string xml, bool precisionAsDisplayed)
     {
-        var model = new ExcelTemplateEngine().Load(xml);
+        var model = new WorkbookParser().Load(xml);
         var renderer = new ExcelTemplateRenderer(new ExcelWorksheetRenderer());
         using var workbook = renderer.Render(model);
         using var stream = new MemoryStream();

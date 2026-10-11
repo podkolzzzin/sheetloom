@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 /// <summary>Preserve whitespace-only cell values without treating document indentation as data.</summary>
 internal sealed class CellWhitespaceReader(XmlReader inner) : XmlReader

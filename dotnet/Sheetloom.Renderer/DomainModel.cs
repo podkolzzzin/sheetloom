@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 public record BaseModel(CssStyle? Style, string? ExcelRowRef, string? ExcelColumnRef);
 

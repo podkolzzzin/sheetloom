@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace ExcelTemplateEngine.Tests;
+namespace Sheetloom.Tests;
 
 public sealed class ServiceLifecycleTests : IClassFixture<WebApplicationFactory<Program>>
 {

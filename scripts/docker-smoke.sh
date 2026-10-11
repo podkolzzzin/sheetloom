@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-if [[ ${SKIP_BUILD:-0} != 1 ]]; then docker build -t excel-template-engine:local .; fi
+if [[ ${SKIP_BUILD:-0} != 1 ]]; then docker build -t sheetloom:local .; fi
 smoke_dir=$(mktemp -d)
 chmod 755 "$smoke_dir"
 cp -R examples/basic "$smoke_dir/pack"
@@ -11,7 +11,7 @@ cleanup() {
   rm -rf "$smoke_dir"
 }
 trap cleanup EXIT
-smoke_container=$(docker run -d --read-only --tmpfs /tmp:rw,nosuid,size=512m -p 127.0.0.1::8080 -v "$smoke_dir/pack:/templates:ro" excel-template-engine:local)
+smoke_container=$(docker run -d --read-only --tmpfs /tmp:rw,nosuid,size=512m -p 127.0.0.1::8080 -v "$smoke_dir/pack:/templates:ro" sheetloom:local)
 smoke_port=$(docker port "$smoke_container" 8080/tcp | cut -d: -f2)
 smoke_url="http://127.0.0.1:$smoke_port"
 wait_ready() {
@@ -83,7 +83,7 @@ done
 docker rm "$smoke_container" >/dev/null
 smoke_container=""
 printf '{"apiVersion":2,"templates":{}}' > "$smoke_dir/pack/manifest.json"
-if docker run --rm -v "$smoke_dir/pack:/templates:ro" excel-template-engine:local; then
+if docker run --rm -v "$smoke_dir/pack:/templates:ro" sheetloom:local; then
   echo 'Invalid pack unexpectedly started' >&2; exit 1
 fi
 echo 'Docker smoke passed: XLSX, precision, read-only mounts/rootfs, non-root, restart update, supervision, invalid startup.'

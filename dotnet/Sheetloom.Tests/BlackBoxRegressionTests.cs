@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Graphics;
 
-namespace ExcelTemplateEngine.Tests;
+namespace Sheetloom.Tests;
 
 public sealed class BlackBoxRegressionTests
 {
@@ -61,7 +61,7 @@ public sealed class BlackBoxRegressionTests
     public void NonemptyWhitespaceTextSurvivesParsingAndSerialization(string text)
     {
         string xml = RendererTests.Xml($"<Row><Cell data-type=\"Text\">{text}</Cell><Cell>marker</Cell></Row>");
-        var model = new global::ExcelTemplateEngine.ExcelTemplateEngine().Load(xml);
+        var model = new global::Sheetloom.WorkbookParser().Load(xml);
         Assert.Equal(text, model.Worksheets[0].Rows[0].Cells[0].Text);
         using var book = RendererTests.Open(xml);
         Assert.Equal(XLDataType.Text, book.Worksheet(1).Cell("A1").DataType);

@@ -1,6 +1,6 @@
 # Security
 
-Report vulnerabilities privately to the repository owner at **podkolzzzin1996@gmail.com**, with subject `excel-template-engine security`. Include the affected revision, a minimal synthetic reproduction and expected impact. Do not open a public issue containing exploits, report data or credentials. No fixed response time is promised.
+Report vulnerabilities privately to the repository owner at **podkolzzzin1996@gmail.com**, with subject `sheetloom security`. Include the affected revision, a minimal synthetic reproduction and expected impact. Do not open a public issue containing exploits, report data or credentials. No fixed response time is promised.
 
 Security fixes target the latest default-branch revision; older revisions have no separate maintenance commitment.
 

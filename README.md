@@ -1,4 +1,6 @@
-# Excel Template Engine
+# Sheetloom
+
+*Excel files from templates and data.*
 
 **JSON + Vue-шаблон → готовий `.xlsx`.** Описуй аркуші, типи клітинок, формули та друк звичайними Vue-компонентами. Один контейнер містить Node.js і .NET-рендерер; Excel на сервері не потрібен.
 
@@ -7,9 +9,9 @@
 Потрібні Docker, Bash і curl. Виконай із кореня репозиторію:
 
 ```bash
-docker build -t excel-template-engine:local .
+docker build -t sheetloom:local .
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" excel-template-engine:local
+  -v "$PWD/examples/basic:/templates:ro" sheetloom:local
 ```
 
 Після повідомлення `ready` виконай в іншому терміналі:

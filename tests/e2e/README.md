@@ -5,7 +5,7 @@ These tests start the **production Docker image**, mount a neutral Vue pack read
 Run from the repository root:
 
 ```sh
-docker build -t excel-template-engine:local .
+docker build -t sheetloom:local .
 python3 -m venv .venv-e2e
 .venv-e2e/bin/python -m pip install -r tests/e2e/requirements.txt
 .venv-e2e/bin/python tests/e2e/test_workbooks.py

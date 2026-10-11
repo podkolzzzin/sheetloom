@@ -5,9 +5,9 @@ Use Node.js 24, the .NET 10 SDK and DejaVu fonts. Docker and Python 3 are needed
 ```sh
 npm ci --ignore-scripts
 npm test
-dotnet restore dotnet/ExcelTemplateEngine.sln --locked-mode
+dotnet restore dotnet/Sheetloom.sln --locked-mode
 python3 scripts/dependency-notices.py --check
-dotnet test dotnet/ExcelTemplateEngine.sln --no-restore --configuration Release
+dotnet test dotnet/Sheetloom.sln --no-restore --configuration Release
 npm run test:docker
 python3 -m venv .venv-e2e
 .venv-e2e/bin/python -m pip install -r tests/e2e/requirements.txt

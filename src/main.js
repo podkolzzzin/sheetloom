@@ -29,10 +29,10 @@ try {
   const port = integer('PORT', 8080, 65535);
   const rendererPort = integer('RENDERER_PORT', 8081, 65535);
   const rendererUrl = `http://127.0.0.1:${rendererPort}`;
-  renderer = spawn('dotnet', [process.env.RENDERER_DLL ?? '/app/renderer/ExcelTemplateEngine.Service.dll'], { stdio: 'inherit' });
+  renderer = spawn('dotnet', [process.env.RENDERER_DLL ?? '/app/renderer/Sheetloom.Service.dll'], { stdio: 'inherit' });
   renderer.once('error', () => { console.error('Renderer process could not start'); void stop(1); });
   renderer.once('exit', () => { if (!stopping) { console.error('Renderer process exited'); void stop(1); } });
-  pack = await compilePack(process.env.TEMPLATES_DIR ?? '/templates', process.env.CACHE_DIR ?? '/tmp/excel-template-engine');
+  pack = await compilePack(process.env.TEMPLATES_DIR ?? '/templates', process.env.CACHE_DIR ?? '/tmp/sheetloom');
   let ready = false;
   for (let attempt = 0; attempt < 120; attempt++) {
     try {

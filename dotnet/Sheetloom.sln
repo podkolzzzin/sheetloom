@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelTemplateEngine.Renderer", "ExcelTemplateEngine.Renderer\ExcelTemplateEngine.Renderer.csproj", "{E231BB8A-B11A-4D63-8329-76F4462A6842}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheetloom.Renderer", "Sheetloom.Renderer\Sheetloom.Renderer.csproj", "{E231BB8A-B11A-4D63-8329-76F4462A6842}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelTemplateEngine.Service", "ExcelTemplateEngine.Service\ExcelTemplateEngine.Service.csproj", "{4BDE2784-581C-44DF-933A-62D2D0EC6FD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheetloom.Service", "Sheetloom.Service\Sheetloom.Service.csproj", "{4BDE2784-581C-44DF-933A-62D2D0EC6FD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelTemplateEngine.Tests", "ExcelTemplateEngine.Tests\ExcelTemplateEngine.Tests.csproj", "{E5E14EAB-4E67-4958-9C7D-D87CC15928F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sheetloom.Tests", "Sheetloom.Tests\Sheetloom.Tests.csproj", "{E5E14EAB-4E67-4958-9C7D-D87CC15928F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,8 +5,8 @@ The renderer tests use synthetic workbooks to verify cell values, formulas, styl
 Run the suite with:
 
 ```sh
-dotnet restore dotnet/ExcelTemplateEngine.sln --locked-mode
-dotnet test dotnet/ExcelTemplateEngine.sln --no-restore
+dotnet restore dotnet/Sheetloom.sln --locked-mode
+dotnet test dotnet/Sheetloom.sln --no-restore
 ```
 
 The suite inspects rendered workbook values/geometry and persisted ZIP/XML parts. Tests inspecting formulas distinguish formula text from cached results: the service does not promise a calculation engine. A few tests reopen workbooks with ClosedXML to check formula references against known cell values; this is test-side evaluation, not a claim that the HTTP response contains calculated caches. The separate Python end-to-end suite provides an independent workbook-reader check.

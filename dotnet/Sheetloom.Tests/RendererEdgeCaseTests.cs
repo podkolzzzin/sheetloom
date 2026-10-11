@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Graphics;
 
-namespace ExcelTemplateEngine.Tests;
+namespace Sheetloom.Tests;
 
 public sealed class RendererEdgeCaseTests
 {

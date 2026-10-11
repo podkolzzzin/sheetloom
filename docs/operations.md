@@ -5,9 +5,9 @@ A stateless JSON → Vue SSR → workbook XML → XLSX service. The image contai
 ## Run
 
 ```sh
-docker build -t excel-template-engine:local .
-docker run --rm --name excel-template-engine -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" excel-template-engine:local
+docker build -t sheetloom:local .
+docker run --rm --name sheetloom -p 127.0.0.1:8080:8080 \
+  -v "$PWD/examples/basic:/templates:ro" sheetloom:local
 curl --fail http://localhost:8080/health
 curl --fail http://localhost:8080/v1/render/invoice \
   -H 'Content-Type: application/json' \
@@ -47,7 +47,7 @@ See [the workbook XML and style reference](workbook-format.md) for cells, formul
 | Variable | Default | Purpose |
 |---|---|---|
 | `TEMPLATES_DIR` | `/templates` | Read-only template pack directory |
-| `CACHE_DIR` | `/tmp/excel-template-engine` | Writable build cache, outside the pack |
+| `CACHE_DIR` | `/tmp/sheetloom` | Writable build cache, outside the pack |
 | `PORT` | `8080` | Public HTTP port |
 | `RENDER_TIMEOUT_MS` | `120000` | Combined template/render response deadline |
 | `BODY_LIMIT_BYTES` | `10485760` | Maximum incoming JSON body |
@@ -69,8 +69,8 @@ Requirements: Node 22.12+ (CI/image use Node 24), .NET 10 SDK, Docker and Python
 ```sh
 npm ci --ignore-scripts
 npm test
-dotnet restore dotnet/ExcelTemplateEngine.sln --locked-mode
-dotnet test dotnet/ExcelTemplateEngine.sln --no-restore
+dotnet restore dotnet/Sheetloom.sln --locked-mode
+dotnet test dotnet/Sheetloom.sln --no-restore
 npm run test:docker
 python3 -m venv .venv-e2e
 .venv-e2e/bin/python -m pip install -r tests/e2e/requirements.txt

@@ -3,9 +3,9 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Graphics;
-using ExcelTemplateEngine;
+using Sheetloom;
 
-namespace ExcelTemplateEngine.Tests;
+namespace Sheetloom.Tests;
 
 public sealed class RendererTests
 {

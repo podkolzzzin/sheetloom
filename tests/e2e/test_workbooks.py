@@ -23,7 +23,7 @@ import openpyxl
 ROOT = Path(__file__).resolve().parents[2]
 PACK = Path(__file__).resolve().parent / "pack"
 ARTIFACTS = Path(os.environ.get("E2E_ARTIFACTS", ROOT / ".artifacts/e2e")).resolve()
-IMAGE = os.environ.get("E2E_IMAGE", "excel-template-engine:local")
+IMAGE = os.environ.get("E2E_IMAGE", "sheetloom:local")
 READER_LOCK = Lock()
 
 

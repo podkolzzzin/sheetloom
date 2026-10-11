@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using ClosedXML.Excel;
 using ClosedXML.Graphics;
 
-namespace ExcelTemplateEngine.Tests;
+namespace Sheetloom.Tests;
 
 /// <summary>Workbook behavior regression coverage; see docs/test-history-renderer.md.</summary>
 public sealed class HistoricalRegressionTests

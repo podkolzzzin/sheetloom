@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 public class ExcelTemplateRenderer(ExcelWorksheetRenderer worksheetRenderer)
 {

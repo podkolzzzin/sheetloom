@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-build
 WORKDIR /source
 COPY dotnet/ dotnet/
-RUN dotnet restore dotnet/ExcelTemplateEngine.Service/ExcelTemplateEngine.Service.csproj --locked-mode \
-    && dotnet publish dotnet/ExcelTemplateEngine.Service/ExcelTemplateEngine.Service.csproj --no-restore -c Release -o /publish
+RUN dotnet restore dotnet/Sheetloom.Service/Sheetloom.Service.csproj --locked-mode \
+    && dotnet publish dotnet/Sheetloom.Service/Sheetloom.Service.csproj --no-restore -c Release -o /publish
 
 FROM node:24-bookworm-slim AS node-runtime
 
@@ -18,7 +18,7 @@ RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund && npm cache clean -
 COPY src/ src/
 COPY LICENSE THIRD_PARTY_NOTICES.md ./
 COPY --from=dotnet-build /publish /app/renderer
-ENV NODE_ENV=production PORT=8080 RENDERER_PORT=8081 TEMPLATES_DIR=/templates CACHE_DIR=/tmp/excel-template-engine
+ENV NODE_ENV=production PORT=8080 RENDERER_PORT=8081 TEMPLATES_DIR=/templates CACHE_DIR=/tmp/sheetloom
 USER app
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 CMD curl --fail --silent http://127.0.0.1:${PORT}/health || exit 1

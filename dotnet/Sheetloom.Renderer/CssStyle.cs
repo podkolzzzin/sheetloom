@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 public enum StyleKey
 {

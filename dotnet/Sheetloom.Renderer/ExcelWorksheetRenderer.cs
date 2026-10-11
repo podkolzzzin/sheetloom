@@ -3,7 +3,7 @@ using ClosedXML.Excel.Drawings;
 using ClosedXML.Graphics;
 using System.Globalization;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
 public class ExcelWorksheetRenderer
 {
@@ -596,7 +596,7 @@ public class ExcelWorksheetRenderer
                 : bool.TryParse(cell.Text, out var b)
                     ? (XLCellValue)b : cell.Text,
 
-            _ => string.IsNullOrEmpty(cell.Text) ? Blank.Value : global::ExcelTemplateEngine.ExcelStyleRenderer.PrepareText(cell.Text)
+            _ => string.IsNullOrEmpty(cell.Text) ? Blank.Value : global::Sheetloom.ExcelStyleRenderer.PrepareText(cell.Text)
         };
     }
 }

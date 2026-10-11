@@ -445,16 +445,16 @@
           "xunit.extensibility.core": "[2.9.3]"
         }
       },
-      "exceltemplateengine.renderer": {
+      "sheetloom.renderer": {
         "type": "Project",
         "dependencies": {
           "ClosedXML": "[0.105.1, )"
         }
       },
-      "exceltemplateengine.service": {
+      "sheetloom.service": {
         "type": "Project",
         "dependencies": {
-          "ExcelTemplateEngine.Renderer": "[1.0.0, )"
+          "Sheetloom.Renderer": "[1.0.0, )"
         }
       }
     }

@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 using System.Xml.Serialization;
 using System.Xml;
 
-namespace ExcelTemplateEngine;
+namespace Sheetloom;
 
-public class ExcelTemplateEngine
+public class WorkbookParser
 {
     private static readonly XmlSerializer Serializer = new(typeof(Workbook));
 

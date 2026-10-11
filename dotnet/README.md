@@ -1,6 +1,6 @@
 # Renderer
 
-`dotnet test dotnet/ExcelTemplateEngine.sln` runs the library and real in-memory HTTP integration tests. `dotnet run --project dotnet/ExcelTemplateEngine.Service` starts the private renderer on `127.0.0.1:8081`.
+`dotnet test dotnet/Sheetloom.sln` runs the library and real in-memory HTTP integration tests. `dotnet run --project dotnet/Sheetloom.Service` starts the private renderer on `127.0.0.1:8081`.
 
 The renderer converts the workbook XML model to XLSX using ClosedXML 0.105.1. XML parsing forbids DTDs/external entities and limits document size. Failed renders dispose allocated workbooks. The serialization wrapper changes `calcPr.fullPrecision` only when requested.
 
