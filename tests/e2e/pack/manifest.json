@@ -1,0 +1,28 @@
+{
+  "apiVersion": 1,
+  "templates": {
+    "values": "Values.vue",
+    "formatting": "Formatting.vue",
+    "names": "Names.vue",
+    "printing": "Printing.vue",
+    "pagination": "Pagination.vue",
+    "fitting": "Fitting.vue",
+    "assets": "Assets.vue",
+    "locale": "Locale.vue",
+    "table": "Table.vue",
+    "failure": "Failure.vue",
+    "repeated": "RepeatedHeaders.vue",
+    "scale": "Scale.vue",
+    "async-failure": "AsyncFailure.vue",
+    "merged-filter": "MergedFilter.vue",
+    "merge-placement": "MergePlacement.vue",
+    "inherited-wrap": "InheritedWrap.vue",
+    "image-extent": "ImageExtent.vue",
+    "asset-literal": "AssetLiteral.vue",
+    "text-fidelity": "TextFidelity.vue"
+  },
+  "aliases": {
+    "@": "lib"
+  },
+  "setup": "setup.ts"
+}

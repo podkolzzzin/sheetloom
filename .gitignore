@@ -1,0 +1,15 @@
+node_modules/
+.cache/
+**/bin/
+**/obj/
+TestResults/
+*.xlsx
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+.venv-e2e/
+.artifacts/
+**/__pycache__/

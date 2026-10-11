@@ -1,0 +1,78 @@
+name: Verify engine
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  secrets:
+    name: Full Git history / secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan all fetched history with redacted findings
+        run: >-
+          docker run --rm -v "$PWD:/repo:ro"
+          ghcr.io/gitleaks/gitleaks:v8.24.3
+          git /repo --redact --log-opts="--all"
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: sudo apt-get update && sudo apt-get install -y fonts-dejavu-core
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: dotnet restore dotnet/ExcelTemplateEngine.sln --locked-mode
+      - run: python3 scripts/dependency-notices.py --check
+      - run: dotnet test dotnet/ExcelTemplateEngine.sln --no-restore --configuration Release
+  e2e-independent-xlsx:
+    name: Docker E2E / openpyxl
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tests/e2e/requirements.txt
+      - name: Install independent XLSX reader
+        run: python -m pip install -r tests/e2e/requirements.txt
+      - name: Build production container
+        run: docker build -t excel-template-engine:local .
+      - name: Run the public quickstart
+        run: SKIP_BUILD=1 bash scripts/demo.sh
+      - name: Verify the quickstart workbook independently
+        run: |
+          python - <<'PY'
+          import openpyxl
+          book = openpyxl.load_workbook('.artifacts/demo/invoice.xlsx')
+          sheet = book['Invoice']
+          assert sheet['A1'].value == 'Example customer'
+          assert sheet['B2'].value == 42.5 and sheet['B3'].value == 7.5
+          assert sheet['B4'].value == '=SUM($B$2:$B3)'
+          book.close()
+          PY
+      - name: Verify container lifecycle and mounted pack updates
+        run: SKIP_BUILD=1 bash scripts/docker-smoke.sh
+      - name: Validate actual HTTP workbooks using openpyxl
+        run: python tests/e2e/test_workbooks.py
+      - name: Preserve workbook evidence and container logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: independent-xlsx-evidence
+          path: |
+            .artifacts/e2e/
+            .artifacts/demo/
+          retention-days: 7
+          if-no-files-found: warn
+          include-hidden-files: true
