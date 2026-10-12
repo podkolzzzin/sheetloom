@@ -17,13 +17,13 @@ You need Docker, curl and a shell. The [Docker Hub image](https://hub.docker.com
 }
 ```
 
-**2. Save this template as `templates/Report.vue`.** `templateData` contains the request's `data` directly:
+**2. Save this template as `templates/Report.vue`.** `getTemplateData<T>()` returns the request's `data` directly:
 
 ```vue
 <script setup lang="ts">
-import { inject } from 'vue';
+import { getTemplateData } from 'sheetloom';
 type ReportData = { items: { name: string; amount: number }[] };
-const { items } = inject<ReportData>('templateData')!;
+const { items } = getTemplateData<ReportData>();
 </script>
 <template>
   <Workbook>
@@ -49,13 +49,15 @@ const { items } = inject<ReportData>('templateData')!;
 </template>
 ```
 
+The engine supplies the `sheetloom` import. The [copyable pack](examples/quickstart/) includes editor types; payload types do not validate incoming JSON.
+
 `firstItem` and `lastItem` mark the item rows; `amount` marks their numeric column. The formula uses these refs to follow the rendered cells.
 
 **3. Start the published image** from the same directory:
 
 ```sh
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.3.0
+  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.3.1
 ```
 
 After the `ready: public .NET API` message, open another terminal in that directory:
@@ -76,7 +78,7 @@ Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `com
 ```yaml
 services:
   sheetloom:
-    image: podkolzzzin1996/sheetloom:0.3.0
+    image: podkolzzzin1996/sheetloom:0.3.1
     platform: linux/amd64
     ports: ["127.0.0.1:8080:8080"]
     volumes: ["./templates:/templates:ro"]

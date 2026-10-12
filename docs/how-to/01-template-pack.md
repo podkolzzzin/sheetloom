@@ -12,9 +12,9 @@ Add `Items.vue` alongside it:
 
 ```vue
 <script setup lang="ts">
-import { inject } from 'vue';
+import { getTemplateData } from 'sheetloom';
 type ReportData = { items: { name: string; amount: number }[] };
-const { items } = inject<ReportData>('templateData')!;
+const { items } = getTemplateData<ReportData>();
 </script>
 <template>
   <Workbook>
@@ -30,4 +30,4 @@ const { items } = inject<ReportData>('templateData')!;
 
 Mount `my-pack/` at `/templates:ro` instead of `templates/` in the README command. Send `POST /v1/render/items` with `{"data":{"items":[{"name":"Paper","amount":12.5}]}}`. The result is an Excel workbook with one row on the `Items` sheet.
 
-**Details.** The HTTP `data` value is provided directly as `templateData`. The TypeScript type helps your editor; it does not validate incoming JSON. The `!` asserts that Sheetloom provides the injection. Validate template-specific fields in your code: the engine validates only the request envelope. Manifest paths are relative to the pack; imports and symlinks must stay inside it. Packs compile at startup, so restart the container after changes.
+**Details.** The engine supplies the `sheetloom` import. Call `getTemplateData<T>()` during component setup, including in nested components. The TypeScript type helps your editor; it does not validate incoming JSON. Validate template-specific fields in your code: the engine validates only the request envelope. Manifest paths are relative to the pack; imports and symlinks must stay inside it. Packs compile at startup, so restart the container after changes.

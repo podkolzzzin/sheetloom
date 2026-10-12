@@ -1,6 +1,6 @@
 <script setup>
-import { inject } from 'vue';
-const { level } = inject('templateData');
+import { getTemplateData } from 'sheetloom';
+const { level } = getTemplateData();
 </script>
 <template>
   <Workbook :style="'font-size:14;' + (level === 'workbook' ? 'text-wrap:wrap' : '')">

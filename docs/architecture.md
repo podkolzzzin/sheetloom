@@ -23,6 +23,7 @@ Public HTTP → PublicApi → TemplateClient → Node server → Vue worker
 | [`src/pack.js`](../src/pack.js) | Validate the manifest and build the Vue bundle. |
 | [`src/render.js`](../src/render.js) | Run each render in a fresh, cancellable worker. |
 | [`src/template-runtime.js`](../src/template-runtime.js) | Provide request data to Vue and render the XML. |
+| [`src/template-data.js`](../src/template-data.js) | Expose request data to templates through `getTemplateData<T>()`. |
 | [`WorkbookRenderer.cs`](../dotnet/Sheetloom.Renderer/WorkbookRenderer.cs) | Parse XML, build a workbook and serialize XLSX. |
 
 ## Inside the workbook renderer

@@ -1,6 +1,6 @@
 <script setup>
-import { inject } from 'vue';
-const data = inject('templateData');
+import { getTemplateData } from 'sheetloom';
+const data = getTemplateData();
 if (!data || typeof data.customer !== 'string' || !Array.isArray(data.items) ||
     !data.items.every(item => item && typeof item.name === 'string' &&
       typeof item.amount === 'number' && Number.isFinite(item.amount))) {

@@ -1,7 +1,7 @@
 <script setup>
-import { inject } from 'vue';
+import { getTemplateData } from 'sheetloom';
 import { dataUri } from '@/assets';
-const { columns, rows } = inject('templateData');
+const { columns, rows } = getTemplateData();
 const image = await dataUri(new URL('./assets/sample.png', import.meta.url));
 </script>
 <template><Workbook><Worksheet name="Image extent">

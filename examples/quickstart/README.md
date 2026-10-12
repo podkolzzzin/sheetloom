@@ -13,6 +13,8 @@ docker compose down
 
 `report.xlsx` has a shaded, bold header and amounts formatted as 42.50 and 7.50 on the Report sheet. The bold Total row contains a `SUM` formula using the `firstItem`, `lastItem` and `amount` refs; Excel calculates 50.00 when the file opens. An empty list produces numeric 0.00 without a formula.
 
+`getTemplateData<ReportData>()` reads the request data during component setup. `templates/sheetloom.d.ts` supplies the helper type to your editor; the engine resolves the import at runtime. Payload types do not validate incoming JSON.
+
 Edit `templates/Report.vue` and the inline JSON in curl for your data. Register additional template IDs in `templates/manifest.json`. After changing templates, run `docker compose restart` and wait for the ready message in `docker compose logs`.
 
 `compose.yaml` lists all supported environment settings. If port 8080 is already in use, change the first port in `ports` and the curl URL. Leave the internal port unchanged. Keep Node's port private.

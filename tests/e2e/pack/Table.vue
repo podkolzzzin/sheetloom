@@ -1,6 +1,6 @@
 <script setup>
-import { inject } from 'vue';
-const data=inject('templateData');
+import { getTemplateData } from 'sheetloom';
+const data=getTemplateData();
 </script>
 <template>
   <Workbook><Worksheet name="Table">

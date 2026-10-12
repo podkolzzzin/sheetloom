@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import moment from 'moment';
-import { inject } from 'vue';
+import { getTemplateData } from 'sheetloom';
 import { next } from '@/state';
-const data = inject<any>('templateData');
+const data = getTemplateData<any>();
 const counter = next();
 </script>
 <template>

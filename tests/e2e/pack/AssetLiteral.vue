@@ -1,7 +1,7 @@
 <script setup>
 import { readFileSync } from 'node:fs';
-import { inject } from 'vue';
-const { backtick } = inject('templateData');
+import { getTemplateData } from 'sheetloom';
+const { backtick } = getTemplateData();
 const value = readFileSync(backtick
   ? new URL(`./assets/literal.txt`, import.meta.url)
   : new URL('./assets/literal.txt', import.meta.url), 'utf8');

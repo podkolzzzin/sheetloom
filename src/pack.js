@@ -7,6 +7,7 @@ import { sourceAssets } from './assets.js';
 
 const dependenciesRoot = fileURLToPath(new URL('../node_modules', import.meta.url));
 const runtimeFile = fileURLToPath(new URL('./template-runtime.js', import.meta.url));
+const templateDataFile = fileURLToPath(new URL('./template-data.js', import.meta.url));
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isInside = (root, target) => target === root || target.startsWith(root + path.sep);
 const workbookTags = new Set([
@@ -99,6 +100,7 @@ async function writeEntry(manifest, cache) {
   ].join('\n');
   const entry = path.join(cache, 'entry.mjs');
   await copyFile(runtimeFile, path.join(cache, 'template-runtime.js'));
+  await copyFile(templateDataFile, path.join(cache, 'template-data.js'));
   await writeFile(entry, source);
   return entry;
 }
@@ -151,6 +153,7 @@ function buildOptions(manifest, cache, entry) {
     resolve: {
       alias: [
         ...manifest.aliases,
+        { find: /^sheetloom$/, replacement: path.join(cache, 'template-data.js') },
         { find: /^moment$/, replacement: path.join(dependenciesRoot, 'moment/moment.js') },
         ...dependencies,
       ],

@@ -25,9 +25,9 @@ A neutral pack component can produce the same structure dynamically:
 
 ```vue
 <script setup lang="ts">
-import { inject } from 'vue'
+import { getTemplateData } from 'sheetloom'
 type ReportData = { items: { name: string; amount: number }[] }
-const { items } = inject<ReportData>('templateData')!
+const { items } = getTemplateData<ReportData>()
 </script>
 
 <template>

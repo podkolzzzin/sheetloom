@@ -6,17 +6,21 @@ import path from 'node:path';
 import { compilePack } from '../../src/pack.js';
 import { renderXml } from '../../src/render.js';
 import { makePack, compile } from './helpers/pack.js';
+import { createSSRApp } from 'vue';
+import { getTemplateData } from '../../src/template-data.js';
 
-test('templateData reaches nested components unchanged and keeps old packs compatible', async t => {
+test('getTemplateData reaches nested components unchanged and keeps both injection APIs compatible', async t => {
   const fixture = await makePack(t, {
     'Report.vue': `<script setup>
       import DataRow from './DataRow.vue';
       </script><template><Workbook><Worksheet name="Data"><DataRow /></Worksheet></Workbook></template>`,
     'DataRow.vue': `<script setup lang="ts">
       import { inject } from 'vue';
-      const data = inject<unknown>('templateData');
+      import { getTemplateData } from 'sheetloom';
+      const data = getTemplateData<unknown>();
+      const direct = inject<unknown>('templateData');
       const legacy = inject<{ body: unknown }>('ssrRequest')!;
-      if (data === undefined || legacy.body !== data) throw new Error('Injection mismatch');
+      if (data === undefined || direct !== data || legacy.body !== data) throw new Error('Injection mismatch');
       const encoded = Buffer.from(JSON.stringify(data)).toString('base64');
       </script><template><Row><Cell>{{ encoded }}</Cell></Row></template>`,
   });
@@ -51,4 +55,11 @@ test('typed quickstart renders named formula refs and handles one or zero items'
       assert.match(xml, /data-type="Number"[^>]*>0<\/Cell>/);
     }
   }
+});
+
+
+test('getTemplateData rejects calls outside setup or without the engine provider', () => {
+  assert.throws(() => getTemplateData(), /must be called during Vue component setup/);
+  const app = createSSRApp({});
+  assert.throws(() => app.runWithContext(() => getTemplateData()), /not provided by Sheetloom/);
 });
