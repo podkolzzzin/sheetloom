@@ -6,7 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { renderXml } from '../src/render.js';
+import { renderXml } from '../../src/render.js';
 
 async function moduleFile(t, source) {
   const root = await mkdtemp(path.join(tmpdir(), 'engine-worker-history-'));
@@ -35,7 +35,7 @@ for (const [name, source] of [
 test('worker standard output, standard error and thrown payload secrets never reach process logs', async t => {
   const bundle = await moduleFile(t, `export function render(id,data){console.log(data);console.error(data);process.stderr.write(data);throw Error(data)}`);
   const runner = path.join(bundle.root, 'runner.mjs');
-  const rendererModule = new URL('../src/render.js', import.meta.url).href;
+  const rendererModule = new URL('../../src/render.js', import.meta.url).href;
   await writeFile(runner, `import {renderXml} from ${JSON.stringify(rendererModule)};try{await renderXml(${JSON.stringify(bundle.url)},'report','PRIVATE_PAYLOAD_CANARY',5000)}catch(error){console.log(error.status,error.code,error.message)}`);
   const { stdout, stderr } = await promisify(execFile)(process.execPath, [runner], { timeout: 10000 });
   assert.match(stdout, /422 template_failed/);

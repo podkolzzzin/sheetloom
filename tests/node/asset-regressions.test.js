@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderXml } from '../src/render.js';
-import { sourceAssets } from '../src/assets.js';
+import { renderXml } from '../../src/render.js';
+import { sourceAssets } from '../../src/assets.js';
 import { makePack, compile, worksheet } from './helpers/pack.js';
 
 for (const extension of ['js', 'mjs', 'ts']) {

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, mkdir, rm, symlink, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { compilePack, readManifest } from '../src/pack.js';
-import { renderXml } from '../src/render.js';
+import { compilePack, readManifest } from '../../src/pack.js';
+import { renderXml } from '../../src/render.js';
 
 async function fixture(t, manifest, files = {}) {
   const root = await mkdtemp(path.join(tmpdir(), 'engine-test-'));

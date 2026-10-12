@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { compilePack } from '../../src/pack.js';
+import { compilePack } from '../../../src/pack.js';
 
 export const worksheet = content => `<template><Workbook><Worksheet name="Regression"><Row><Cell>${content}</Cell></Row></Worksheet></Workbook></template>`;
 export async function makePack(t, files, manifest = { apiVersion: 1, templates: { report: 'Report.vue' } }) {

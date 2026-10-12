@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir, symlink, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { compilePack, readManifest } from '../src/pack.js';
-import { renderXml } from '../src/render.js';
+import { compilePack, readManifest } from '../../src/pack.js';
+import { renderXml } from '../../src/render.js';
 import { makePack, compile, worksheet } from './helpers/pack.js';
 
 test('historical Moment locale side-effect alone configures the same imported instance', async t => {

@@ -14,6 +14,8 @@ python3 -m venv .venv-e2e
 .venv-e2e/bin/python tests/e2e/test_workbooks.py
 ```
 
+Node tests and their helpers live in `tests/node/`; container E2E tests and synthetic packs live in `tests/e2e/`. Renderer tests stay with the .NET solution in `dotnet/Sheetloom.Tests/`. CI runs the Node suite through `npm test`.
+
 Keep changes focused. For a bug, add a small synthetic template and an assertion that fails before the fix. Workbook assertions should check values, types, formulas or layout rather than ZIP-byte snapshots. Never add business reports, personal records, credentials or production configuration.
 
 Describe the problem, resulting behavior and checks in your PR. Update [the format reference](docs/workbook-format.md) for dialect changes and [operations](docs/operations.md) for HTTP or configuration changes. CI covers Node, .NET, Docker, independent openpyxl checks and Git history secret scanning.

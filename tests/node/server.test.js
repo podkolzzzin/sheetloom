@@ -5,7 +5,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createServer } from '../src/server.js';
+import { createServer } from '../../src/server.js';
 
 async function setup(t, options = {}, handler) {
   const dir=await mkdtemp(path.join(tmpdir(),'engine-api-'));t.after(()=>rm(dir,{recursive:true,force:true}));

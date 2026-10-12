@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { compilePack } from '../src/pack.js';
-import { renderXml } from '../src/render.js';
+import { compilePack } from '../../src/pack.js';
+import { renderXml } from '../../src/render.js';
 
 test('public invoice example handles documented, empty and invalid input', async t => {
   const cache = await mkdtemp(path.join(tmpdir(), 'invoice-example-'));

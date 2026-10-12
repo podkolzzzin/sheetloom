@@ -5,7 +5,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { createServer } from '../src/server.js';
+import { createServer } from '../../src/server.js';
 
 async function api(t, handler, options = {}, source = 'export function render(id,data){return "<Workbook>"+JSON.stringify(data)+"</Workbook>"}') {
   const directory = await mkdtemp(path.join(tmpdir(), 'engine-api-history-'));

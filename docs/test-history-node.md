@@ -35,8 +35,8 @@ A subsequent independent black-box audit found that an equivalent static backtic
 
 ```sh
 npm test
-node --test test/asset-regressions.test.js test/pack-history.test.js
-node --test test/api-failure-history.test.js test/worker-history.test.js
+node --test tests/node/asset-regressions.test.js tests/node/pack-history.test.js
+node --test tests/node/api-failure-history.test.js tests/node/worker-history.test.js
 ```
 
 Negative compilation fixtures deliberately produce Vite `Build failed` diagnostics; their Node assertions must pass. The local full run passed **67/67**, with zero skips. HTTP timeout assertions verify status/recovery rather than a brittle exact elapsed duration. Tests clean up temporary files, worker processes and loopback sockets.

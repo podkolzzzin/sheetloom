@@ -7,7 +7,7 @@
   "engines": { "node": ">=22.12" },
   "scripts": {
     "start": "node src/main.js",
-    "test": "node --test test/*.test.js",
+    "test": "node --test tests/node/*.test.js",
     "test:docker": "bash scripts/docker-smoke.sh",
     "demo": "bash scripts/demo.sh"
   },
