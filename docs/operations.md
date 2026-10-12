@@ -38,7 +38,7 @@ Client ← XLSX ← .NET / ClosedXML
 
 Node listens only on loopback; publish only port 8080. A Node crash stops the .NET host with a nonzero exit code. A .NET crash ends the container. Docker/orchestrator restart policy owns recovery; normal shutdown stops both processes.
 
-For a complete Compose example, copy [`examples/quickstart/`](../examples/quickstart/) and run `docker compose up --wait` inside it. The folder includes the manifest, Vue template, request JSON and every supported configuration variable. Use the curl command in its README, then `docker compose down` to stop.
+For a complete Compose example, copy [`examples/quickstart/`](../examples/quickstart/) and run `docker compose up --wait` inside it. The folder includes the manifest, Vue template and every supported configuration variable. Request JSON is passed inline in curl. Use the curl command in its README, then `docker compose down` to stop.
 
 ## Template pack v1
 

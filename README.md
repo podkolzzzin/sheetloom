@@ -8,14 +8,13 @@
 
 You need Docker, curl and a shell. The [Docker Hub image](https://hub.docker.com/r/podkolzzzin1996/sheetloom) supports **Linux/amd64** (ARM hosts need emulation).
 
-**1. Create a template pack and input data** in an empty directory:
+**1. Create a `templates` folder and a `templates/manifest.json` file** with this content:
 
-```sh
-mkdir templates
-printf '%s\n' '{"apiVersion":1,"templates":{"report":"Report.vue"}}' > templates/manifest.json
-cat > request.json <<'JSON'
-{"data":{"items":[{"name":"Consulting","amount":42.5},{"name":"Materials","amount":7.5}]}}
-JSON
+```json
+{
+  "apiVersion": 1,
+  "templates": { "report": "Report.vue" }
+}
 ```
 
 **2. Save this template as `templates/Report.vue`.** `inject('ssrRequest').body` contains the request's `data`:
@@ -49,14 +48,15 @@ After the `ready: public .NET API` message, open another terminal in that direct
 ```sh
 curl --fail-with-body http://localhost:8080/v1/render/report \
   -H 'Content-Type: application/json' \
-  --data-binary @request.json -o report.xlsx
+  -d '{"data":{"items":[{"name":"Consulting","amount":42.5},{"name":"Materials","amount":7.5}]}}' \
+  -o report.xlsx
 ```
 
 Open `report.xlsx`: the **Report** sheet contains Consulting / **42.5** and Materials / **7.5**, with amounts stored as numbers. Press Ctrl+C in the Docker terminal to stop. Restart after changing a template; no image rebuild is needed.
 
 ## Docker Compose
 
-Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `compose.yaml` beside the `templates/` folder and `request.json` above. It includes every supported configuration variable with its default value:
+Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `compose.yaml` beside the `templates/` folder above. It includes every supported configuration variable with its default value:
 
 ```yaml
 services:
@@ -81,7 +81,7 @@ services:
     restart: unless-stopped
 ```
 
-Run `docker compose up --wait`, then use the same curl command above. Stop with `docker compose down`. The copied folder includes the exact template and JSON from this quick start. See [configuration](docs/operations.md#configuration-and-operations) for limits and font options.
+Run `docker compose up --wait`, then use the same curl command above. Stop with `docker compose down`. The copied folder includes the template and manifest from this quick start. See [configuration](docs/operations.md#configuration-and-operations) for limits and font options.
 
 ## How it works
 
