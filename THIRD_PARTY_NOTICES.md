@@ -230,6 +230,6 @@ Runtime packages come from the service lockfile. Test-only dependencies are incl
 ## Container components
 
 The Docker image also contains Node.js, .NET/ASP.NET, Ubuntu packages, DejaVu fonts, curl and tini.
-Their licenses and notices are separate from the engine license. The base-image and system-package versions
-are resolved during the image build; this source-lockfile inventory is not an image SBOM.
+Their licenses and notices are separate from the engine license. Base images are pinned by digest; system-package
+updates are resolved during the image build. This source-lockfile inventory is not an image SBOM.
 Review the exact image and retain its upstream notices before distributing a binary release.
