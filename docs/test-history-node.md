@@ -1,6 +1,8 @@
 # Node regression history and failure boundaries
 
-`npm test` runs 72 tests without Docker or external accounts. The original 23 tests were expanded with 41 historical/edge cases, three subsequent static-asset regressions and five public-example checks. Fixtures use temporary synthetic Vue packs, actual worker threads, compiled production SSR bundles and loopback HTTP servers. The API tests use a controlled private renderer; they do not replace the real .NET or Docker suites.
+`npm test` runs the Node template-service tests without Docker or external accounts. Fixtures use temporary synthetic Vue packs, actual worker threads, compiled production SSR bundles and loopback HTTP servers.
+
+Since 0.2.0, .NET owns the public API. Public validation, upstream error mapping, HTTP deadlines and XLSX response tests live in `dotnet/Sheetloom.Tests/ServiceTests.cs`, `ServiceLifecycleTests.cs` and `NodeTemplateClientTests.cs`. Node tests cover the private XML API, byte limits and worker cancellation. The historical findings below explain the original regressions; both suites preserve the relevant behavior.
 
 ## Regression coverage
 
@@ -41,4 +43,4 @@ node --test tests/node/api-failure-history.test.js tests/node/worker-history.tes
 
 Negative compilation fixtures deliberately produce Vite `Build failed` diagnostics; their Node assertions must pass. The local full run passed **67/67**, with zero skips. HTTP timeout assertions verify status/recovery rather than a brittle exact elapsed duration. Tests clean up temporary files, worker processes and loopback sockets.
 
-A Node fetch timeout cancels transport; it cannot forcibly interrupt synchronous ClosedXML computation already running in .NET. That renderer lifecycle limitation remains separate from the worker termination guarantees tested here.
+An HTTP deadline cancels the private Node request; it cannot forcibly interrupt synchronous ClosedXML computation already running in .NET. That renderer lifecycle limitation remains separate from the worker termination guarantees tested here.

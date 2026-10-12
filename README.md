@@ -2,7 +2,7 @@
 
 *Excel files from templates and data.*
 
-**JSON + a Vue template → a ready-to-use `.xlsx`.** Define worksheets, cell types, formulas and print layout with Vue components. One container includes Node.js and the .NET renderer; no Excel installation is needed on the server.
+**JSON + a Vue template → a ready-to-use `.xlsx`.** Define worksheets, cell types, formulas and print layout with Vue components. One container runs a public .NET API and a private Node.js template service; no Excel installation is needed on the server.
 
 ## Quick start
 
@@ -12,10 +12,10 @@ You need Docker, Git and curl. The published image supports **Linux/amd64** (ARM
 git clone https://github.com/podkolzzzin/sheetloom.git
 cd sheetloom
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.1.0
+  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.2.0
 ```
 
-After the `ready` message, run in another terminal from the same repository directory:
+After the `ready: public .NET API` message, run in another terminal from the same repository directory:
 
 ```bash
 curl --fail-with-body http://localhost:8080/v1/render/invoice \
@@ -23,11 +23,13 @@ curl --fail-with-body http://localhost:8080/v1/render/invoice \
   --data-binary @examples/basic/request.json -o invoice.xlsx
 ```
 
-Open `invoice.xlsx`: the **Invoice** sheet contains a customer, two items and a total formula that evaluates to **50**. Excel or a compatible application calculates formulas when the file opens. To start and stop the demo automatically, run `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.1.0 bash scripts/demo.sh`; the workbook stays in `.artifacts/demo/`.
+Open `invoice.xlsx`: the **Invoice** sheet contains a customer, two items and a total formula that evaluates to **50**. Excel or a compatible application calculates formulas when the file opens. To start and stop the demo automatically, run `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.2.0 bash scripts/demo.sh`; the workbook stays in `.artifacts/demo/`.
 
-Get releases from [Docker Hub](https://hub.docker.com/r/podkolzzzin1996/sheetloom). Pin `0.1.0` for this release; `latest` follows new releases. [Deployment and source builds](docs/operations.md).
+Get releases from [Docker Hub](https://hub.docker.com/r/podkolzzzin1996/sheetloom). Pin `0.2.0` for this release; `latest` follows new releases. [Deployment and source builds](docs/operations.md).
 
 ## How it works
+
+.NET starts Node on loopback, sends it JSON to render Vue into XML, then builds the XLSX in the same .NET process. Only the .NET port is published.
 
 In [manifest.json](examples/basic/manifest.json), the `invoice` ID points to [Invoice.vue](examples/basic/Invoice.vue). Send `{"data": {...}}`; the template receives `data` through `inject('ssrRequest').body`. Vue produces `Workbook → Worksheet → Row → Cell` markup, which ClosedXML converts to Excel.
 

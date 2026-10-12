@@ -1,12 +1,12 @@
 {
   "name": "sheetloom",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=22.12" },
   "scripts": {
-    "start": "node src/main.js",
+    "start": "bash scripts/start.sh",
     "test": "node --test tests/node/*.test.js",
     "test:docker": "bash scripts/docker-smoke.sh",
     "demo": "bash scripts/demo.sh"

@@ -34,7 +34,7 @@ Source publication and image distribution have different contents. Build the exa
 The public image is `podkolzzzin1996/sheetloom` (Linux/amd64). Keep release tags immutable and move `latest` only after verification. Build from a clean, committed revision with green CI:
 
 ```sh
-version=0.1.0
+version=0.2.0
 image=podkolzzzin1996/sheetloom
 docker build --pull --platform linux/amd64 \
   --build-arg VERSION="$version" --build-arg REVISION="$(git rev-parse HEAD)" \

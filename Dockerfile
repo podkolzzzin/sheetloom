@@ -29,8 +29,8 @@ COPY LICENSE THIRD_PARTY_NOTICES.md ./
 COPY licenses/ /app/licenses/
 COPY --from=node-runtime /usr/local/LICENSE /app/licenses/Node.LICENSE
 COPY --from=dotnet-build /publish /app/renderer
-ENV NODE_ENV=production PORT=8080 RENDERER_PORT=8081 TEMPLATES_DIR=/templates CACHE_DIR=/tmp/sheetloom
+ENV NODE_ENV=production PORT=8080 NODE_PORT=8081 TEMPLATES_DIR=/templates CACHE_DIR=/tmp/sheetloom
 USER app
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 CMD curl --fail --silent http://127.0.0.1:${PORT}/health || exit 1
-ENTRYPOINT ["/usr/bin/tini", "--", "node", "src/main.js"]
+ENTRYPOINT ["/usr/bin/tini", "--", "dotnet", "/app/renderer/Sheetloom.Service.dll"]

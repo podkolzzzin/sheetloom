@@ -1,19 +1,20 @@
 # Renderer
 
-`dotnet test dotnet/Sheetloom.sln` runs the library and real in-memory HTTP integration tests. `dotnet run --project dotnet/Sheetloom.Service` starts the private renderer on `127.0.0.1:8081`.
+`dotnet test dotnet/Sheetloom.sln` runs renderer, public API and private Node transport tests. From the repository root, `npm ci --ignore-scripts` followed by `npm start` starts the public .NET service with the example pack. It launches Node automatically.
 
-The renderer converts the workbook XML model to XLSX using ClosedXML 0.105.1. XML parsing forbids DTDs/external entities and limits document size. Failed renders dispose allocated workbooks. The serialization wrapper changes `calcPr.fullPrecision` only when requested.
+## Process ownership and request flow
 
-## Internal service contract
+ASP.NET is the container's main application. It starts Node, waits for template discovery, then exposes the public API on port 8080. Node binds only to `127.0.0.1:8081` and compiles the mounted pack. A Node crash stops the host; normal host shutdown terminates Node.
 
-- `GET /health`: `{ "status": "ok" }`.
-- `POST /render`: `{ "xml": "<Workbook>...</Workbook>", "precisionAsDisplayed": false }`; returns XLSX.
-- `RENDERER_PORT` defaults to 8081; binding always stays on loopback.
-- `RENDERER_CONCURRENCY` defaults to 2. Busy requests receive 503 without joining an unbounded queue.
+- Public .NET: `GET /health`, `GET /v1/templates`, `POST /v1/render/{id}` with `{ "data": ..., "options": { "precisionAsDisplayed": false } }`.
+- Private Node: `GET /health`, `GET /templates`, `POST /render/{id}` with `{ "data": ... }`; returns UTF-8 XML. This internal protocol is not a public API.
+- .NET calls `IWorkbookRenderer.Render` directly with the returned XML. There is no separate renderer HTTP server.
+- `PORT` defaults to 8080; `NODE_PORT` defaults to 8081 and must differ. `RENDER_CONCURRENCY` defaults to 2 and bounds the complete pipeline.
 - `RENDERER_FALLBACK_FONT` defaults to `DejaVu Sans`; install production fonts if exact font metrics are required.
-- JSON request limit is 16 MiB; XML limit is 8 Mi characters. Malformed JSON/schema is 400, excessive size 413, wrong media type 415, rendering failure 422. Errors have `{ "error": { "code", "message" } }`; report content and exception messages are not logged.
 
-Each render allocates its own workbook, formula tracking, and models. In-flight synchronous ClosedXML work is bounded by concurrency; public request deadlines are enforced by the Node supervisor. Work already inside ClosedXML cannot be preempted by an HTTP cancellation.
+The renderer uses ClosedXML 0.105.1. XML parsing forbids DTDs/external entities and limits document size. Each render allocates its own workbook, formula tracking and models; failures dispose allocated workbooks. The serialization wrapper changes `calcPr.fullPrecision` only when requested.
+
+Public JSON defaults to a 10 MiB limit; generated XML is limited to 8 MiB in UTF-8. Errors are structured and never include template data or upstream response bodies. One deadline covers template execution and XLSX rendering. Cancelling an HTTP call stops the Vue worker; synchronous ClosedXML work retains its capacity slot until it finishes, even after a 504 response. See [operations](../docs/operations.md) for the complete contract and migration from 0.1.0.
 
 ## Format behavior
 
