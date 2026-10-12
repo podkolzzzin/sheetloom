@@ -10,10 +10,7 @@ namespace Sheetloom.Tests;
 public sealed class TemplateStub : ITemplateService
 {
     public IReadOnlyList<string> Ids => ["report"];
-    public Func<string, JsonElement, CancellationToken, Task<string>> Render
-    {
-        get; set;
-    } =
+    public Func<string, JsonElement, CancellationToken, Task<string>> Render { get; set; } =
         (_, data, _) => Task.FromResult(data.GetString()!);
     public Func<CancellationToken, Task> Health { get; set; } = _ => Task.CompletedTask;
     public Task CheckHealthAsync(CancellationToken token) => Health(token);

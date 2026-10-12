@@ -8,7 +8,7 @@ indent_style = space
 
 [*.cs]
 indent_size = 4
-csharp_preserve_single_line_blocks = false
+csharp_preserve_single_line_blocks = true
 csharp_preserve_single_line_statements = false
 
 [*.{js,json,yml,yaml}]
