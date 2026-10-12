@@ -26,10 +26,19 @@ const { items } = inject('ssrRequest').body;
 </script>
 <template>
   <Workbook>
-    <Worksheet name="Report">
+    <Worksheet name="Report" style="number-format:0.00">
+      <Row style="font-weight:bold;background-color:#eaf0f6">
+        <Cell style="width:24">Item</Cell>
+        <Cell style="width:14">Amount</Cell>
+      </Row>
       <Row v-for="(item, i) in items" :key="i">
         <Cell>{{ item.name }}</Cell>
         <Cell data-type="Number">{{ item.amount }}</Cell>
+      </Row>
+      <Row style="font-weight:bold">
+        <Cell>Total</Cell>
+        <Cell v-if="items.length"><FormulaR1C1>SUM(R2C2:R[-1]C2)</FormulaR1C1></Cell>
+        <Cell v-else data-type="Number">0</Cell>
       </Row>
     </Worksheet>
   </Workbook>
@@ -52,7 +61,7 @@ curl --fail-with-body http://localhost:8080/v1/render/report \
   -o report.xlsx
 ```
 
-Open `report.xlsx`: the **Report** sheet contains Consulting / **42.5** and Materials / **7.5**, with amounts stored as numbers. Press Ctrl+C in the Docker terminal to stop. Restart after changing a template; no image rebuild is needed.
+Open `report.xlsx`: the **Report** sheet has a shaded, bold header, amounts formatted as **42.50** and **7.50**, and a bold **Total** row with a `SUM` formula. Excel calculates **50.00** when the file opens; an empty list produces numeric **0.00**. Press Ctrl+C in the Docker terminal to stop. Restart after changing a template; no image rebuild is needed.
 
 ## Docker Compose
 
