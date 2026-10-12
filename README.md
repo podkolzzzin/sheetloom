@@ -31,19 +31,24 @@ const { items } = inject('ssrRequest').body;
         <Cell style="width:24">Item</Cell>
         <Cell style="width:14">Amount</Cell>
       </Row>
-      <Row v-for="(item, i) in items" :key="i">
+      <Row v-for="(item, i) in items" :key="i"
+        :excel-row-ref="i === 0 ? 'firstItem lastItem' : 'lastItem'">
         <Cell>{{ item.name }}</Cell>
-        <Cell data-type="Number">{{ item.amount }}</Cell>
+        <Cell excel-column-ref="amount" data-type="Number">{{ item.amount }}</Cell>
       </Row>
       <Row style="font-weight:bold">
         <Cell>Total</Cell>
-        <Cell v-if="items.length"><FormulaR1C1>SUM(R2C2:R[-1]C2)</FormulaR1C1></Cell>
+        <Cell v-if="items.length">
+          <FormulaR1C1>SUM(R{firstItem}C{amount}:R{lastItem}C{amount})</FormulaR1C1>
+        </Cell>
         <Cell v-else data-type="Number">0</Cell>
       </Row>
     </Worksheet>
   </Workbook>
 </template>
 ```
+
+`firstItem` and `lastItem` mark the item rows; `amount` marks their numeric column. The formula uses these refs to follow the rendered cells.
 
 **3. Start the published image** from the same directory:
 
