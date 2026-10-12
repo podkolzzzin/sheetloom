@@ -57,7 +57,7 @@ The engine supplies the `sheetloom` import. The [copyable pack](examples/quickst
 
 ```sh
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.3.1
+  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:1.0.0
 ```
 
 After the `ready: public .NET API` message, open another terminal in that directory:
@@ -78,7 +78,7 @@ Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `com
 ```yaml
 services:
   sheetloom:
-    image: podkolzzzin1996/sheetloom:0.3.1
+    image: podkolzzzin1996/sheetloom:1.0.0
     platform: linux/amd64
     ports: ["127.0.0.1:8080:8080"]
     volumes: ["./templates:/templates:ro"]

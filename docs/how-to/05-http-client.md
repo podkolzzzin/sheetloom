@@ -26,6 +26,7 @@ await response.Content.CopyToAsync(output);
 | `400` | The `data` envelope and `options` types. |
 | `404` | The template ID against `GET /v1/templates`. |
 | `413` | Request and generated XML sizes against configured limits. |
+| `415` | Set `Content-Type: application/json`. |
 | `422` | Template input and the XML it produces. |
 | `502` / `503` / `504` | Availability, load and render time; retry with backoff only when appropriate. |
 

@@ -114,6 +114,21 @@ class WorkbookE2E(unittest.TestCase):
         self.assertTrue(metadata["readonly_rootfs"])
         self.assertTrue(metadata["pack_readonly"])
 
+    def test_json_prototype_named_keys_survive_the_public_api(self):
+        cases = [
+            {"__proto__": {"sheetloomPolluted": "own value"},
+             "constructor": {"prototype": {"sheetloomPolluted": True}}},
+            {"nested": [{"__proto__": {"sheetloomPolluted": 42}},
+                        {"constructor": {"prototype": {"sheetloomPolluted": False}}}]},
+            [{"__proto__": None}, {"constructor": "ordinary"},
+             {"prototype": 0}, {"hasOwnProperty": "ordinary"}],
+        ]
+        for index, data in enumerate(cases):
+            with self.subTest(data=data):
+                sheet = self.workbook("json-data", data, label=f"json-own-keys-{index}").active
+                self.assertEqual(json.loads(sheet["A1"].value), data)
+                self.assertIs(sheet["B1"].value, True)
+
     def test_json_values_unicode_identifiers_and_formula_looking_text(self):
         sheet = self.workbook("values", self.values()).active
         self.assertEqual(sheet["A1"].value, "Україна & <B> — 🧪")

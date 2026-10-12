@@ -19,6 +19,9 @@ export function createServer({ pack, bodyLimit = 10 * 1024 * 1024, timeoutMs = 1
     logger: false,
     requestTimeout: timeoutMs,
     connectionTimeout: 0,
+    // Preserve arbitrary JSON keys. Data is passed to a worker, never merged into engine objects.
+    onProtoPoisoning: 'ignore',
+    onConstructorPoisoning: 'ignore',
     ajv: { customOptions: { removeAdditional: false, coerceTypes: false } },
   });
   const ids = new Set(pack.ids);

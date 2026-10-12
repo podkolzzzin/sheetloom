@@ -19,7 +19,8 @@
     "inherited-wrap": "InheritedWrap.vue",
     "image-extent": "ImageExtent.vue",
     "asset-literal": "AssetLiteral.vue",
-    "text-fidelity": "TextFidelity.vue"
+    "text-fidelity": "TextFidelity.vue",
+    "json-data": "JsonData.vue"
   },
   "aliases": {
     "@": "lib"

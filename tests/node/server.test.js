@@ -14,6 +14,34 @@ test('private service returns XML and preserves primitive, null and array data',
     assert.equal(response.headers['content-disposition'], undefined);
   }
 });
+test('private JSON preserves prototype-named own properties without modifying prototypes', async t => {
+  const prototypes = Object.getOwnPropertyDescriptors(Object.prototype);
+  const app = await setup(t, {}, `export async function render(id, data) {
+    function check(value) {
+      if (value === null || typeof value !== 'object') return;
+      const expected = Array.isArray(value) ? Array.prototype : Object.prototype;
+      if (Object.getPrototypeOf(value) !== expected) throw Error('Unexpected prototype');
+      for (const key of Object.keys(value)) check(value[key]);
+    }
+    check(data);
+    if (Object.hasOwn(Object.prototype, 'sheetloomPolluted')) throw Error('Polluted prototype');
+    return '<Workbook>' + JSON.stringify(data) + '</Workbook>';
+  }`);
+  const inputs = [
+    '{"__proto__":{"sheetloomPolluted":"own value"},"constructor":{"prototype":{"sheetloomPolluted":true}}}',
+    '{"nested":[{"__proto__":{"sheetloomPolluted":42}},{"constructor":{"prototype":{"sheetloomPolluted":false}}}]}',
+    '[{"__proto__":null},{"constructor":"ordinary"},{"prototype":0},{"hasOwnProperty":"ordinary"}]',
+  ];
+  for (const input of inputs) {
+    const response = await app.inject({
+      method: 'POST', url: '/render/invoice',
+      headers: { 'content-type': 'application/json' }, payload: '{"data":' + input + '}',
+    });
+    assert.equal(response.statusCode, 200, response.body);
+    assert.equal(response.body, '<Workbook>' + input + '</Workbook>');
+    assert.deepEqual(Object.getOwnPropertyDescriptors(Object.prototype), prototypes);
+  }
+});
 test('private health and discovery do not expose the public API', async t => {
   const app = await setup(t);
   assert.deepEqual((await app.inject('/health')).json(), { status: 'ok' });
