@@ -27,3 +27,30 @@ Check the empty-invoice case as well as the example request: the empty total mus
 ## Before distributing an image
 
 Source publication and image distribution have different contents. Build the exact release image, inventory its OS/runtime dependencies, review vulnerabilities, and retain the relevant license texts and notices. The source dependency table is not an image SBOM. Publish immutable image references and record the source revision only after those checks pass.
+
+
+## Docker Hub release
+
+The public image is `podkolzzzin1996/sheetloom` (Linux/amd64). Keep release tags immutable and move `latest` only after verification. Build from a clean, committed revision with green CI:
+
+```sh
+version=0.1.0
+image=podkolzzzin1996/sheetloom
+docker build --pull --platform linux/amd64 \
+  --build-arg VERSION="$version" --build-arg REVISION="$(git rev-parse HEAD)" \
+  -t "$image:$version" .
+DEMO_IMAGE="$image:$version" bash scripts/demo.sh
+E2E_IMAGE="$image:$version" .venv-e2e/bin/python tests/e2e/test_workbooks.py
+```
+
+Before pushing, scan that image with your container scanner, retain an SBOM and review its vulnerability report. Keep runtime NuGet license texts in `licenses/` aligned with the lockfiles; Node, .NET, npm and system-package notices are also retained in the image. Base-image tags are resolved at build time, so a rebuild may have a different digest.
+
+```sh
+docker login
+docker push "$image:$version"
+docker tag "$image:$version" "$image:latest"
+docker push "$image:latest"
+docker pull "$image:$version"
+```
+
+Record the registry digest, source revision, scan results and supported platform in the GitHub release. Verify the downloaded image with `DEMO_IMAGE="$image@sha256:…" bash scripts/demo.sh`. Update the README and Docker Hub overview for the new version. Never commit registry credentials.

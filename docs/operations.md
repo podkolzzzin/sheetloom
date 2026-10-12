@@ -4,16 +4,29 @@ A stateless JSON → Vue SSR → workbook XML → XLSX service. The image contai
 
 ## Run
 
+From a checkout of [the repository](https://github.com/podkolzzzin/sheetloom), start the published image:
+
 ```sh
-docker build -t sheetloom:local .
-docker run --rm --name sheetloom -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" sheetloom:local
+docker pull podkolzzzin1996/sheetloom:0.1.0
+docker run -d --name sheetloom -p 127.0.0.1:8080:8080 \
+  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.1.0
+```
+
+After `docker logs sheetloom` shows `ready`:
+
+```sh
 curl --fail http://localhost:8080/health
 curl --fail http://localhost:8080/v1/render/invoice \
   -H 'Content-Type: application/json' \
   -d '{"data":{"customer":"Example","items":[{"name":"Consulting","amount":42.5}]},"options":{"precisionAsDisplayed":true}}' \
   -o invoice.xlsx
 ```
+
+Remove the demo container with `docker rm -f sheetloom`. Replace `examples/basic` with an absolute path to your own pack.
+
+The [Docker Hub image](https://hub.docker.com/r/podkolzzzin1996/sheetloom) currently supports **Linux/amd64**. ARM hosts require emulation and `--platform linux/amd64`. Version tags are retained unchanged; `latest` tracks the newest release. For reproducible deployments, use the digest printed by `docker pull`: `podkolzzzin1996/sheetloom@sha256:…`.
+
+To build locally, run `docker build -t sheetloom:local .` and use `sheetloom:local` in the commands above. `bash scripts/demo.sh` builds and exercises the local image; `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.1.0 bash scripts/demo.sh` uses the published release.
 
 One container supervises Node and a private .NET renderer. The public port opens only after successful pack compilation and renderer readiness. Either child exiting terminates the container; Docker/orchestrator restart policy owns recovery.
 

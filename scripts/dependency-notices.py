@@ -58,7 +58,7 @@ def generate(nuget_cache):
             raise ValueError(f'Missing license metadata: {name}@{version}')
         lines.append(f'| [{name}](https://www.nuget.org/packages/{name}/{version}) | {version} | {scope} | {license_id} |')
     lines += ['', '## Container components', '',
-              'The Docker image also contains Node.js, .NET/ASP.NET, Debian packages, DejaVu fonts, curl and tini.',
+              'The Docker image also contains Node.js, .NET/ASP.NET, Ubuntu packages, DejaVu fonts, curl and tini.',
               'Their licenses and notices are separate from the engine license. The base-image and system-package versions',
               'are resolved during the image build; this source-lockfile inventory is not an image SBOM.',
               'Review the exact image and retain its upstream notices before distributing a binary release.', '']

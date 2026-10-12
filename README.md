@@ -6,15 +6,16 @@
 
 ## Quick start
 
-You need Docker, Bash and curl. Run from the repository root:
+You need Docker, Git and curl. The published image supports **Linux/amd64** (ARM hosts need emulation).
 
 ```bash
-docker build -t sheetloom:local .
+git clone https://github.com/podkolzzzin/sheetloom.git
+cd sheetloom
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" sheetloom:local
+  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.1.0
 ```
 
-After the `ready` message, run in another terminal:
+After the `ready` message, run in another terminal from the same repository directory:
 
 ```bash
 curl --fail-with-body http://localhost:8080/v1/render/invoice \
@@ -22,7 +23,9 @@ curl --fail-with-body http://localhost:8080/v1/render/invoice \
   --data-binary @examples/basic/request.json -o invoice.xlsx
 ```
 
-Open `invoice.xlsx`: the **Invoice** sheet contains a customer, two items and a total formula that evaluates to **50**. Excel or a compatible application calculates formulas when the file opens. To start and stop the demo automatically, run `bash scripts/demo.sh`; the workbook stays in `.artifacts/demo/`.
+Open `invoice.xlsx`: the **Invoice** sheet contains a customer, two items and a total formula that evaluates to **50**. Excel or a compatible application calculates formulas when the file opens. To start and stop the demo automatically, run `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.1.0 bash scripts/demo.sh`; the workbook stays in `.artifacts/demo/`.
+
+Get releases from [Docker Hub](https://hub.docker.com/r/podkolzzzin1996/sheetloom). Pin `0.1.0` for this release; `latest` follows new releases. [Deployment and source builds](docs/operations.md).
 
 ## How it works
 

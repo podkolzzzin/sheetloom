@@ -10,9 +10,12 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-if [[ ${SKIP_BUILD:-0} != 1 ]]; then docker build -t sheetloom:local .; fi
+demo_image=${DEMO_IMAGE:-sheetloom:local}
+if [[ -z ${DEMO_IMAGE:-} && ${SKIP_BUILD:-0} != 1 ]]; then
+  docker build -t "$demo_image" .
+fi
 demo_container=$(docker run -d --read-only --tmpfs /tmp:rw,nosuid,size=512m \
-  -p 127.0.0.1::8080 -v "$PWD/examples/basic:/templates:ro" sheetloom:local)
+  -p 127.0.0.1::8080 -v "$PWD/examples/basic:/templates:ro" "$demo_image")
 demo_port=$(docker port "$demo_container" 8080/tcp | cut -d: -f2)
 demo_url="http://127.0.0.1:$demo_port"
 demo_ready=0
