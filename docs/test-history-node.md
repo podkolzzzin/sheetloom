@@ -6,7 +6,7 @@
 
 | Failure case | Regression and observable assertion |
 | --- | --- |
-| Moment imported twice through CJS/ESM paths, so Ukrainian locale registration affected the wrong instance | `pack-history.test.js`: setup imports only `moment/locale/uk`, a separate helper imports bare `moment`, rendered January must be `січень`; no explicit `moment.locale()` hides the failure |
+| Moment imported twice through CJS/ESM paths, so Ukrainian locale registration affected the wrong instance | `pack-history.test.js`: setup imports only `moment/locale/uk`, a separate helper imports bare `moment`, rendered January must use the Ukrainian month name; no explicit `moment.locale()` hides the failure |
 | Vue swallowed production component failures and emitted incomplete XML | Existing synchronous failure tests plus async setup, rejected setup-module import, render-expression and falsy thrown-value tests require safe 422 errors |
 | Asset regex matched examples inside strings, comments and cells | Existing text-example regression remains; AST extraction additionally distinguishes real JSX/TSX expressions and ignores their text content |
 | BOM manifest failed JSON parsing | Existing compiled-pack test and malformed BOM-prefixed JSON rejection exercise both acceptance and failure paths |

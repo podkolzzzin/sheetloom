@@ -1,15 +1,15 @@
-# Як налаштувати друк і закріплення
+# Configure printing and frozen headers
 
-[← README](../../README.md) · Встав цей аркуш у `<Workbook>`:
+[← README](../../README.md) · Place this worksheet inside `<Workbook>`:
 
 ```vue
 <Worksheet name="Items" fit-columns-to-page="true">
-  <Row><Cell colspan="2">Перелік матеріалів</Cell></Row>
+  <Row><Cell colspan="2">Materials list</Cell></Row>
   <Row excel-row-ref="header" freeze-pane="true" auto-filter="true">
-    <Cell>Назва</Cell><Cell>Кількість</Cell>
+    <Cell>Item</Cell><Cell>Quantity</Cell>
   </Row>
   <Row excel-row-ref="lastRow">
-    <Cell>Папір</Cell><Cell data-type="Number">10</Cell>
+    <Cell>Paper</Cell><Cell data-type="Number">10</Cell>
   </Row>
   <PrintingArea paper-size="A4" orientation="Landscape">
     R1C1:R{lastRow}C2
@@ -18,10 +18,10 @@
 </Worksheet>
 ```
 
-**Результат:** дві колонки друкуються на A4 горизонтально, по ширині однієї сторінки. Табличний заголовок повторюється на папері й закріплюється на екрані з початковою прокруткою до нього.
+**Result:** both columns fit across one landscape A4 page. The table header repeats on printed pages and stays frozen on screen, with the initial view scrolled to it.
 
-- `PrintingArea` задає друкований діапазон; колонки поза ним залишаються в книзі. Межі пишуться через двокрапку навіть для однієї клітинки.
-- `RowsToRepeatAtTop` сам по собі впливає лише на друк. Для екранного закріплення потрібен `freeze-pane="true"` на останньому рядку заголовка.
-- Щоб закріпити також титульні рядки вище, додай `freeze-pane-from-start="true"` на `Worksheet`.
+- `PrintingArea` defines the printed range; columns outside it remain in the workbook. Use a colon between range endpoints, even for one cell.
+- `RowsToRepeatAtTop` alone affects printing. Add `freeze-pane="true"` to the last header row to freeze it on screen.
+- To freeze the title rows above it as well, add `freeze-pane-from-start="true"` to `Worksheet`.
 
-Рендерер зберігає область друку з початковим режимом перегляду розривів сторінок. Для перевірки закріплення можна перейти у звичайне подання Excel. Висота рядків залежить від шрифтів; перевіряй друк у цільовій програмі, особливо після перенесення довгого тексту.
+The renderer saves print areas with an initial page-break-preview view. Switch to Excel's Normal view to inspect frozen rows. Row height depends on fonts; check printing in your target application, especially when wrapping long text.

@@ -1,6 +1,6 @@
-# Як передати числа, дати та текст
+# Preserve cell types and apply styles
 
-[← README](../../README.md) · Фрагмент усередині `<Worksheet>`:
+[← README](../../README.md) · Place this fragment inside `<Worksheet>`:
 
 ```vue
 <Row>
@@ -11,16 +11,16 @@
 </Row>
 <Row>
   <Cell colspan="4" style="text-wrap:wrap;border:1">
-    Примітка на чотири колонки з перенесенням тексту.
+    A wrapped note spanning four columns.
   </Cell>
 </Row>
 ```
 
-**Результат:** код зберігає початкові нулі, сума залишається числом, дата — датою. Остання клітинка об'єднує чотири колонки.
+**Result:** the identifier keeps its leading zeros, the amount stays numeric and the date is stored as a date. The final cell spans four columns.
 
-- Тип за замовчуванням — `Text`. Рахунки й ідентифікатори зазвичай передавай текстом.
-- Число передавай із крапкою, дату — як `yyyy-MM-dd`. Нерозпізнане значення залишається текстом, порожнє — порожньою клітинкою. Формат змінює відображення, а не тип.
-- `style` — обмежена мова рендерера: без CSS-класів і `px`. Ширина задається в одиницях Excel, висота — у пунктах.
-- Для позицій, зайнятих `colspan`/`rowspan`, не додавай клітинок-заглушок. Рендерер сам шукає вільне місце.
+- The default type is `Text`. Use it for identifiers and account numbers.
+- Use a decimal point for numbers and `yyyy-MM-dd` for dates. Invalid values remain text; empty values become blank cells. Formatting changes display, not type.
+- `style` is a limited renderer language, without CSS classes or `px`. Width uses Excel column units; height uses points.
+- Do not add placeholder cells for positions occupied by `colspan` or `rowspan`. The renderer finds available space automatically.
 
-Повний список властивостей і обмеження форматів із `:`/`;` — у [довіднику](../workbook-format.md).
+See the [reference](../workbook-format.md) for all properties and limitations of formats containing `:` or `;`.

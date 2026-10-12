@@ -1,14 +1,14 @@
-# Як додати власний шаблон
+# Create a template pack
 
 [← README](../../README.md)
 
-Створи папку `my-pack/` із файлом `manifest.json`:
+Create a `my-pack/` directory with a `manifest.json` file:
 
 ```json
 {"apiVersion":1,"templates":{"items":"Items.vue"}}
 ```
 
-Поруч створи `Items.vue`:
+Add `Items.vue` alongside it:
 
 ```vue
 <script setup>
@@ -27,6 +27,6 @@ const { items } = inject('ssrRequest').body;
 </template>
 ```
 
-Монтуй `my-pack/` у `/templates:ro` замість `examples/basic/` у команді з README. Надішли `POST /v1/render/items` із тілом `{"data":{"items":[{"name":"Папір","amount":12.5}]}}`. Результат — Excel з одним рядком на аркуші `Items`.
+Mount `my-pack/` at `/templates:ro` instead of `examples/basic/` in the README command. Send `POST /v1/render/items` with `{"data":{"items":[{"name":"Paper","amount":12.5}]}}`. The result is an Excel workbook with one row on the `Items` sheet.
 
-**Нюанси.** HTTP-обгортка `data` не потрапляє в `.body` повторно. Поля самого шаблону перевіряй у його коді: рушій перевіряє лише загальну структуру запиту. Шляхи в manifest відносні до пакета; імпорти й симлінки не можуть виходити за його межі. Пакет компілюється при старті — після змін перезапусти контейнер.
+**Details.** The HTTP `data` wrapper is removed before the template receives `.body`. Validate template-specific fields in your code: the engine validates only the request envelope. Manifest paths are relative to the pack; imports and symlinks must stay inside it. Packs compile at startup, so restart the container after changes.
