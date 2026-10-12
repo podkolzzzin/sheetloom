@@ -13,7 +13,7 @@ test('public invoice example handles documented, empty and invalid input', async
   t.after(pack.dispose);
   const render = data => renderXml(pack.bundle, 'invoice', data, 10000);
 
-  await t.test('README request produces numeric items and a bounded total formula', async () => {
+  await t.test('bundled request produces numeric items and a bounded total formula', async () => {
     const { data } = JSON.parse(await readFile('examples/basic/request.json', 'utf8'));
     const xml = await render(data);
     assert.match(xml, /<Worksheet name="Invoice">/);

@@ -49,7 +49,7 @@ test('compiles BOM manifest, aliases, TS, setup/locale and source assets outside
     'X.vue':`<script setup lang="ts">
       import {inject} from 'vue'; import moment from 'moment'; import {readFile} from 'node:fs/promises';
       import {prefix} from '@/value';
-      const value = inject<any>('ssrRequest').body;
+      const value = inject<any>('templateData');
       const asset = await readFile(new URL('./asset.txt', import.meta.url),'utf8');
       </script><template><Workbook><Worksheet name="Data"><Row><Cell>{{prefix}} {{value}} {{moment('2026-01-01').format('MMMM')}} {{asset}}</Cell></Row></Worksheet></Workbook></template>`,
   });
@@ -62,7 +62,7 @@ test('compiles BOM manifest, aliases, TS, setup/locale and source assets outside
 test('fresh workers isolate module state for concurrent requests', async t => {
   const f=await fixture(t,{apiVersion:1,templates:{x:'X.vue'}},{
     'state.ts':'export let n=0; export function next(){return ++n}',
-    'X.vue':`<script setup>import {inject} from 'vue';import {next} from './state';const n=next();const data=inject('ssrRequest').body;</script><template><Workbook><Worksheet name="Test"><Row><Cell>{{n}}:{{data}}</Cell></Row></Worksheet></Workbook></template>`,
+    'X.vue':`<script setup>import {inject} from 'vue';import {next} from './state';const n=next();const data=inject('templateData');</script><template><Workbook><Worksheet name="Test"><Row><Cell>{{n}}:{{data}}</Cell></Row></Worksheet></Workbook></template>`,
   });
   const pack=await compilePack(f.pack,f.cache);t.after(pack.dispose);
   const results=await Promise.all(['A','B','C'].map(x=>renderXml(pack.bundle,'x',x,10000)));
@@ -81,7 +81,7 @@ test('cache cannot live in read-only template tree', async t => {
   await assert.rejects(compilePack(f.pack,path.join(f.pack,'cache')),/outside/);
 });
 test('worker timeout terminates CPU-bound template and future requests still work', async t => {
-  const f=await fixture(t,{apiVersion:1,templates:{x:'X.vue'}},{'X.vue':`<script setup>import {inject} from 'vue';if(inject('ssrRequest').body){while(true){}}</script><template><Workbook /></template>`});
+  const f=await fixture(t,{apiVersion:1,templates:{x:'X.vue'}},{'X.vue':`<script setup>import {inject} from 'vue';if(inject('templateData')){while(true){}}</script><template><Workbook /></template>`});
   const pack=await compilePack(f.pack,f.cache);t.after(pack.dispose);
   await assert.rejects(renderXml(pack.bundle,'x',true,200),e=>e.status===504);
   assert.match(await renderXml(pack.bundle,'x',false,5000),/<Workbook/);

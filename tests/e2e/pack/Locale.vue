@@ -2,7 +2,7 @@
 import moment from 'moment';
 import { inject } from 'vue';
 import { next } from '@/state';
-const data = inject<any>('ssrRequest').body;
+const data = inject<any>('templateData');
 const counter = next();
 </script>
 <template>

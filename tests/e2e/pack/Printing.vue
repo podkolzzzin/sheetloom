@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue';
-const data=inject('ssrRequest').body;
+const data=inject('templateData');
 </script>
 <template>
   <Workbook><Worksheet name="Print" fit-columns-to-page="true" :freeze-pane-from-start="data.fromStart">

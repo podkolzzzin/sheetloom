@@ -1,7 +1,7 @@
 <script setup>
 import { readFileSync } from 'node:fs';
 import { inject } from 'vue';
-const { backtick } = inject('ssrRequest').body;
+const { backtick } = inject('templateData');
 const value = readFileSync(backtick
   ? new URL(`./assets/literal.txt`, import.meta.url)
   : new URL('./assets/literal.txt', import.meta.url), 'utf8');

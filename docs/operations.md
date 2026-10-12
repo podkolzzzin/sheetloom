@@ -7,9 +7,9 @@ A stateless JSON → Vue SSR → workbook XML → XLSX service. The image contai
 From a checkout of [the repository](https://github.com/podkolzzzin/sheetloom), start the published image:
 
 ```sh
-docker pull podkolzzzin1996/sheetloom:0.2.0
+docker pull podkolzzzin1996/sheetloom:0.3.0
 docker run -d --name sheetloom -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.2.0
+  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.3.0
 ```
 
 After `docker logs sheetloom` shows `ready: public .NET API`:
@@ -26,7 +26,7 @@ Remove the demo container with `docker rm -f sheetloom`. Replace `examples/basic
 
 The [Docker Hub image](https://hub.docker.com/r/podkolzzzin1996/sheetloom) currently supports **Linux/amd64**. ARM hosts require emulation and `--platform linux/amd64`. Version tags are retained unchanged; `latest` tracks the newest release. For reproducible deployments, use the digest printed by `docker pull`: `podkolzzzin1996/sheetloom@sha256:…`.
 
-To build locally, run `docker build -t sheetloom:local .` and use `sheetloom:local` in the commands above. `bash scripts/demo.sh` builds and exercises the local image; `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.2.0 bash scripts/demo.sh` uses the published release.
+To build locally, run `docker build -t sheetloom:local .` and use `sheetloom:local` in the commands above. `bash scripts/demo.sh` builds and exercises the local image; `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.3.0 bash scripts/demo.sh` uses the published release.
 
 The container entry point is `tini → .NET`. ASP.NET starts a child Node process on `127.0.0.1:8081`, waits for pack compilation and template discovery, then opens the public API on port 8080. Node only converts JSON and Vue to XML. .NET renders that XML to XLSX in-process and returns it directly to the client.
 
@@ -51,7 +51,7 @@ For a complete Compose example, copy [`examples/quickstart/`](../examples/quicks
 }
 ```
 
-Only `apiVersion` and nonempty `templates` are required. Paths are relative to the pack directory and must stay inside it, including symlinks. IDs use letters, numbers, `_` and `-`. The optional setup module runs for side effects before template rendering (for example locale registration). Components receive the request data through Vue's `inject('ssrRequest').body`. Each request gets a fresh app and worker, so module state cannot leak between requests.
+Only `apiVersion` and nonempty `templates` are required. Paths are relative to the pack directory and must stay inside it, including symlinks. IDs use letters, numbers, `_` and `-`. The optional setup module runs for side effects before template rendering (for example locale registration). Components receive the request data through Vue's `inject('templateData')`, without an HTTP wrapper. Each request gets a fresh app and worker, so module state cannot leak between requests.
 
 The engine supplies Vue, Vue Router, Moment and LINQ dependencies at pinned versions. Node built-ins are available. No package installation happens at startup. Relative source imports, TypeScript and Vue SFCs are compiled by Vite. Literal `new URL('./asset.png', import.meta.url)` references retain source-file locations, including substitution-free backtick literals, so filesystem assets remain accessible in a mounted pack.
 
@@ -84,6 +84,12 @@ The container runs as non-root. Pack directories must be traversable and files r
 The response deadline covers the Node call and XLSX rendering together. Cancelling the Node call terminates its Vue worker. An in-progress ClosedXML operation is synchronous and may finish after the HTTP deadline; its shared rendering slot remains occupied until it completes. This prevents timed-out requests from accumulating unbounded background work. Health checks indicate process availability, not spare render capacity. The host allows up to 10 seconds for shutdown and stops its Node child; Docker may enforce an outer stop timeout.
 
 Font metrics affect row heights and pagination. The image includes DejaVu; mount your licensed fonts read-only under `/usr/local/share/fonts` and restart when exact production typography is required. Use the same fonts for compatibility comparisons.
+
+## Upgrading from 0.2.x
+
+Version 0.3.0 provides the request's `data` directly through `inject('templateData')`. Use `<script setup lang="ts">` and `inject<ReportData>('templateData')!` for editor types. The type annotation is not runtime validation; validate template-specific input when needed. Sheetloom always provides the injection. Its value may still be JSON `null`, an array or a primitive; choose a type matching your payload.
+
+Existing packs using `inject('ssrRequest').body` continue to work. New templates should use `templateData`. The HTTP envelope and manifest version remain unchanged.
 
 ## Upgrading from 0.1.0
 

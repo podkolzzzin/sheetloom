@@ -1,6 +1,6 @@
 services:
   sheetloom:
-    image: podkolzzzin1996/sheetloom:0.2.0
+    image: podkolzzzin1996/sheetloom:0.3.0
     platform: linux/amd64
     ports: ["127.0.0.1:8080:8080"]
     volumes: ["./templates:/templates:ro"]

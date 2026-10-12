@@ -16,6 +16,7 @@ See [Contributing](../CONTRIBUTING.md) for dependency and Python environment set
 | Behavior | Location |
 | --- | --- |
 | Manifest validation, compilation, locales and cache cleanup | `tests/node/pack.test.js`, `pack-lifecycle.test.js` |
+| Template data, typed quickstart and compatibility with older packs | `tests/node/template-data.test.js` |
 | Vue, TypeScript and JSX asset paths | `tests/node/assets.test.js` |
 | Worker isolation, failures, cancellation and log privacy | `tests/node/worker-lifecycle.test.js`, `pack.test.js` |
 | Private XML API, capacity and byte limits | `tests/node/server.test.js`, `server-limits.test.js` |

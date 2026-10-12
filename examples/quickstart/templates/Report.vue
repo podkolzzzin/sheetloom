@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { inject } from 'vue';
-const { items } = inject('ssrRequest').body;
+type ReportData = { items: { name: string; amount: number }[] };
+const { items } = inject<ReportData>('templateData')!;
 </script>
 <template>
   <Workbook>

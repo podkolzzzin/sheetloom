@@ -15,6 +15,8 @@ export function createRenderer(templates) {
       failure = error;
     };
 
+    app.provide('templateData', data);
+    // Compatibility for packs written before 0.3.0.
     app.provide('ssrRequest', { body: data });
     const xml = await renderToString(app, {});
     if (failed) {

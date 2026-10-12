@@ -1,7 +1,7 @@
 <script setup>
 import { inject } from 'vue';
 import { dataUri } from '@/assets';
-const { columns, rows } = inject('ssrRequest').body;
+const { columns, rows } = inject('templateData');
 const image = await dataUri(new URL('./assets/sample.png', import.meta.url));
 </script>
 <template><Workbook><Worksheet name="Image extent">

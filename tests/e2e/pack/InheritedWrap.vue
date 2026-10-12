@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue';
-const { level } = inject('ssrRequest').body;
+const { level } = inject('templateData');
 </script>
 <template>
   <Workbook :style="'font-size:14;' + (level === 'workbook' ? 'text-wrap:wrap' : '')">

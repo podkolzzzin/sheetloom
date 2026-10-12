@@ -24,15 +24,16 @@ Collections are direct repeated elements: `Workbook/Worksheet`, `Worksheet/Row`,
 A neutral pack component can produce the same structure dynamically:
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { inject } from 'vue'
-const { body } = inject('ssrRequest')
+type ReportData = { items: { name: string; amount: number }[] }
+const { items } = inject<ReportData>('templateData')!
 </script>
 
 <template>
   <Workbook>
     <Worksheet name="Items">
-      <Row v-for="(item, index) in body.items" :key="index">
+      <Row v-for="(item, index) in items" :key="index">
         <Cell>{{ item.name }}</Cell>
         <Cell data-type="Number" style="number-format:0.00">{{ item.amount }}</Cell>
       </Row>

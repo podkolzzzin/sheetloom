@@ -17,12 +17,13 @@ You need Docker, curl and a shell. The [Docker Hub image](https://hub.docker.com
 }
 ```
 
-**2. Save this template as `templates/Report.vue`.** `inject('ssrRequest').body` contains the request's `data`:
+**2. Save this template as `templates/Report.vue`.** `templateData` contains the request's `data` directly:
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { inject } from 'vue';
-const { items } = inject('ssrRequest').body;
+type ReportData = { items: { name: string; amount: number }[] };
+const { items } = inject<ReportData>('templateData')!;
 </script>
 <template>
   <Workbook>
@@ -54,7 +55,7 @@ const { items } = inject('ssrRequest').body;
 
 ```sh
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.2.0
+  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.3.0
 ```
 
 After the `ready: public .NET API` message, open another terminal in that directory:
@@ -75,7 +76,7 @@ Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `com
 ```yaml
 services:
   sheetloom:
-    image: podkolzzzin1996/sheetloom:0.2.0
+    image: podkolzzzin1996/sheetloom:0.3.0
     platform: linux/amd64
     ports: ["127.0.0.1:8080:8080"]
     volumes: ["./templates:/templates:ro"]

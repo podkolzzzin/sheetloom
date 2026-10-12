@@ -11,9 +11,10 @@ Create a `my-pack/` directory with a `manifest.json` file:
 Add `Items.vue` alongside it:
 
 ```vue
-<script setup>
+<script setup lang="ts">
 import { inject } from 'vue';
-const { items } = inject('ssrRequest').body;
+type ReportData = { items: { name: string; amount: number }[] };
+const { items } = inject<ReportData>('templateData')!;
 </script>
 <template>
   <Workbook>
@@ -27,6 +28,6 @@ const { items } = inject('ssrRequest').body;
 </template>
 ```
 
-Mount `my-pack/` at `/templates:ro` instead of `examples/basic/` in the README command. Send `POST /v1/render/items` with `{"data":{"items":[{"name":"Paper","amount":12.5}]}}`. The result is an Excel workbook with one row on the `Items` sheet.
+Mount `my-pack/` at `/templates:ro` instead of `templates/` in the README command. Send `POST /v1/render/items` with `{"data":{"items":[{"name":"Paper","amount":12.5}]}}`. The result is an Excel workbook with one row on the `Items` sheet.
 
-**Details.** The HTTP `data` wrapper is removed before the template receives `.body`. Validate template-specific fields in your code: the engine validates only the request envelope. Manifest paths are relative to the pack; imports and symlinks must stay inside it. Packs compile at startup, so restart the container after changes.
+**Details.** The HTTP `data` value is provided directly as `templateData`. The TypeScript type helps your editor; it does not validate incoming JSON. The `!` asserts that Sheetloom provides the injection. Validate template-specific fields in your code: the engine validates only the request envelope. Manifest paths are relative to the pack; imports and symlinks must stay inside it. Packs compile at startup, so restart the container after changes.
