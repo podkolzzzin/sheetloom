@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Sheetloom;
@@ -49,12 +50,14 @@ public static class PublicApi
             if (!await capacity.Slots.WaitAsync(0, context.RequestAborted)) return Error(503, "busy", "Render capacity reached; retry later");
             bool rendererOwnsSlot = false;
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
+            var elapsed = Stopwatch.StartNew();
             deadline.CancelAfter(options.TimeoutMs);
             try
             {
                 string xml = await templates.RenderAsync(id, data, deadline.Token);
                 if (Encoding.UTF8.GetByteCount(xml) > ServiceOptions.XmlLimit) return Error(413, "output_too_large", "Rendered XML exceeds limit");
                 deadline.Token.ThrowIfCancellationRequested();
+                if (elapsed.ElapsedMilliseconds >= options.TimeoutMs) return Error(504, "render_timeout", "Workbook rendering timed out");
                 var logger = loggerFactory.CreateLogger("Renderer");
                 // ClosedXML is synchronous. Its slot remains occupied even if the HTTP deadline expires.
                 var work = Task.Run(() =>
@@ -69,6 +72,8 @@ public static class PublicApi
                 });
                 rendererOwnsSlot = true;
                 var output = await work.WaitAsync(deadline.Token);
+                // Timer callbacks can be delayed under load; elapsed time still enforces the shared deadline.
+                if (elapsed.ElapsedMilliseconds >= options.TimeoutMs) return Error(504, "render_timeout", "Workbook rendering timed out");
                 if (output.Failed) return Error(422, "invalid_workbook", "Template produced invalid workbook XML");
                 context.Response.Headers.ContentDisposition = $"attachment; filename=\"{id}.xlsx\"";
                 context.Response.Headers.CacheControl = "no-store";

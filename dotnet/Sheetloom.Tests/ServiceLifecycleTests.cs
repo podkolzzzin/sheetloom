@@ -135,11 +135,15 @@ public sealed class ServiceLifecycleTests
         {
             services.RemoveAll<IWorkbookRenderer>(); services.AddSingleton<IWorkbookRenderer>(renderer);
             services.RemoveAll<ServiceOptions>(); services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 500, 1, "unused"));
+            services.RemoveAll<RenderCapacity>(); services.AddSingleton(new RenderCapacity(1));
         }));
         using var client = constrained.CreateClient();
         using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = 0 });
         Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
         await renderer.Finished.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var capacity = constrained.Services.GetRequiredService<RenderCapacity>();
+        Assert.True(await capacity.Slots.WaitAsync(TimeSpan.FromSeconds(5)));
+        capacity.Slots.Release();
     }
 
     private sealed class DelayedRenderer : IWorkbookRenderer
