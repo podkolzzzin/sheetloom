@@ -128,7 +128,10 @@ docker stop -t 15 "$smoke_container" >/dev/null
 docker rm "$smoke_container" >/dev/null
 smoke_container=""
 printf '{"apiVersion":2,"templates":{}}' > "$smoke_dir/pack/manifest.json"
-if docker run --rm -v "$smoke_dir/pack:/templates:ro" "$smoke_image"; then
-  echo 'Invalid pack unexpectedly started' >&2; exit 1
-fi
+invalid_status=0
+docker run --rm -v "$smoke_dir/pack:/templates:ro" "$smoke_image" > "$smoke_dir/startup.log" 2>&1 || invalid_status=$?
+cat "$smoke_dir/startup.log"
+[[ $invalid_status != 0 ]]
+# A missing image or Docker failure must not count as successful pack validation.
+[[ $(<"$smoke_dir/startup.log") == *'Template service startup failed'* ]]
 echo 'Docker smoke passed: XLSX, precision, read-only mounts/rootfs, non-root, restart update, .NET parent, private Node, crash supervision, graceful shutdown, invalid startup.'

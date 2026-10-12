@@ -1,23 +1,15 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-build
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:e70cdb7f80b0348f5cb85f19a8f670fca061f033d57eed12fa003d58b0e06317 AS dotnet-build
 WORKDIR /source
 COPY dotnet/ dotnet/
 RUN dotnet restore dotnet/Sheetloom.Service/Sheetloom.Service.csproj --locked-mode \
     && dotnet publish dotnet/Sheetloom.Service/Sheetloom.Service.csproj --no-restore -c Release -o /publish
 
-FROM node:24-bookworm-slim AS node-runtime
+FROM node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20 AS node-runtime
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-ARG VERSION=dev
-ARG REVISION=unknown
-LABEL org.opencontainers.image.title="Sheetloom" \
-      org.opencontainers.image.description="Excel files from Vue templates and JSON data" \
-      org.opencontainers.image.source="https://github.com/podkolzzzin/sheetloom" \
-      org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.version=$VERSION \
-      org.opencontainers.image.revision=$REVISION
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.12@sha256:222759b391a1aaf241166672c8f99b2d4ada452e7b5319f3c6e8f265a37b5ad4
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends fonts-dejavu-core curl tini \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=node-runtime /usr/local/bin/node /usr/local/bin/node
@@ -34,3 +26,12 @@ USER app
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 CMD curl --fail --silent http://127.0.0.1:${PORT}/health || exit 1
 ENTRYPOINT ["/usr/bin/tini", "--", "dotnet", "/app/renderer/Sheetloom.Service.dll"]
+
+ARG VERSION=dev
+ARG REVISION=unknown
+LABEL org.opencontainers.image.title="Sheetloom" \
+      org.opencontainers.image.description="Excel files from Vue templates and JSON data" \
+      org.opencontainers.image.source="https://github.com/podkolzzzin/sheetloom" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version=$VERSION \
+      org.opencontainers.image.revision=$REVISION

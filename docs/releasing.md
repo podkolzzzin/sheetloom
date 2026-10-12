@@ -43,7 +43,7 @@ DEMO_IMAGE="$image:$version" bash scripts/demo.sh
 E2E_IMAGE="$image:$version" .venv-e2e/bin/python tests/e2e/test_workbooks.py
 ```
 
-Before pushing, scan that image with your container scanner, retain an SBOM and review its vulnerability report. Keep runtime NuGet license texts in `licenses/` aligned with the lockfiles; Node, .NET, npm and system-package notices are also retained in the image. Base-image tags are resolved at build time, so a rebuild may have a different digest.
+Before pushing, scan that image with your container scanner, retain an SBOM and review its vulnerability report. Keep runtime NuGet license texts in `licenses/` aligned with the lockfiles; Node, .NET, npm and system-package notices are also retained in the image. Base images are pinned by digest in the Dockerfile. Update those pins deliberately for runtime security releases. System-package updates are resolved during the build, so a rebuild may still have a different digest.
 
 ```sh
 docker login
