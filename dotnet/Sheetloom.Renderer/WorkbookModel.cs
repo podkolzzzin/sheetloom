@@ -11,8 +11,16 @@ public record WorkbookModel(
     string? ExcelColumnRef)
     : BaseModel(Style, ExcelRowRef, ExcelColumnRef);
 
-public enum Orientation { Portrait, Landscape }
-public enum PaperSize { A4, A3 }
+public enum Orientation
+{
+    Portrait,
+    Landscape
+}
+public enum PaperSize
+{
+    A4,
+    A3
+}
 
 public record PrintingAreaModel(string? Range, Orientation? Orientation, PaperSize? PaperSize, string? RowsToRepeatAtTop);
 

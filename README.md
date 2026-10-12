@@ -6,34 +6,86 @@
 
 ## Quick start
 
-You need Docker, Git and curl. The published image supports **Linux/amd64** (ARM hosts need emulation).
+You need Docker, curl and a shell. The [Docker Hub image](https://hub.docker.com/r/podkolzzzin1996/sheetloom) supports **Linux/amd64** (ARM hosts need emulation).
 
-```bash
-git clone https://github.com/podkolzzzin/sheetloom.git
-cd sheetloom
+**1. Create a template pack and input data** in an empty directory:
+
+```sh
+mkdir templates
+printf '%s\n' '{"apiVersion":1,"templates":{"report":"Report.vue"}}' > templates/manifest.json
+cat > request.json <<'JSON'
+{"data":{"items":[{"name":"Consulting","amount":42.5},{"name":"Materials","amount":7.5}]}}
+JSON
+```
+
+**2. Save this template as `templates/Report.vue`.** `inject('ssrRequest').body` contains the request's `data`:
+
+```vue
+<script setup>
+import { inject } from 'vue';
+const { items } = inject('ssrRequest').body;
+</script>
+<template>
+  <Workbook>
+    <Worksheet name="Report">
+      <Row v-for="(item, i) in items" :key="i">
+        <Cell>{{ item.name }}</Cell>
+        <Cell data-type="Number">{{ item.amount }}</Cell>
+      </Row>
+    </Worksheet>
+  </Workbook>
+</template>
+```
+
+**3. Start the published image** from the same directory:
+
+```sh
 docker run --rm -p 127.0.0.1:8080:8080 \
-  -v "$PWD/examples/basic:/templates:ro" podkolzzzin1996/sheetloom:0.2.0
+  -v "$PWD/templates:/templates:ro" podkolzzzin1996/sheetloom:0.2.0
 ```
 
-After the `ready: public .NET API` message, run in another terminal from the same repository directory:
+After the `ready: public .NET API` message, open another terminal in that directory:
 
-```bash
-curl --fail-with-body http://localhost:8080/v1/render/invoice \
+```sh
+curl --fail-with-body http://localhost:8080/v1/render/report \
   -H 'Content-Type: application/json' \
-  --data-binary @examples/basic/request.json -o invoice.xlsx
+  --data-binary @request.json -o report.xlsx
 ```
 
-Open `invoice.xlsx`: the **Invoice** sheet contains a customer, two items and a total formula that evaluates to **50**. Excel or a compatible application calculates formulas when the file opens. To start and stop the demo automatically, run `DEMO_IMAGE=podkolzzzin1996/sheetloom:0.2.0 bash scripts/demo.sh`; the workbook stays in `.artifacts/demo/`.
+Open `report.xlsx`: the **Report** sheet contains Consulting / **42.5** and Materials / **7.5**, with amounts stored as numbers. Press Ctrl+C in the Docker terminal to stop. Restart after changing a template; no image rebuild is needed.
 
-Get releases from [Docker Hub](https://hub.docker.com/r/podkolzzzin1996/sheetloom). Pin `0.2.0` for this release; `latest` follows new releases. [Deployment and source builds](docs/operations.md).
+## Docker Compose
+
+Copy [examples/quickstart/](examples/quickstart/) anywhere, or save this as `compose.yaml` beside the `templates/` folder and `request.json` above. It includes every supported configuration variable with its default value:
+
+```yaml
+services:
+  sheetloom:
+    image: podkolzzzin1996/sheetloom:0.2.0
+    platform: linux/amd64
+    ports: ["127.0.0.1:8080:8080"]
+    volumes: ["./templates:/templates:ro"]
+    environment:
+      PORT: "8080"
+      NODE_PORT: "8081"
+      TEMPLATES_DIR: /templates
+      CACHE_DIR: /tmp/sheetloom
+      NODE_SCRIPT: /app/src/main.js
+      RENDER_TIMEOUT_MS: "120000"
+      BODY_LIMIT_BYTES: "10485760"
+      RENDER_CONCURRENCY: "2"
+      RENDERER_FALLBACK_FONT: DejaVu Sans
+    read_only: true
+    tmpfs: ["/tmp:rw,nosuid,size=512m"]
+    stop_grace_period: 15s
+    restart: unless-stopped
+```
+
+Run `docker compose up --wait`, then use the same curl command above. Stop with `docker compose down`. The copied folder includes the exact template and JSON from this quick start. See [configuration](docs/operations.md#configuration-and-operations) for limits and font options.
 
 ## How it works
 
-.NET starts Node on loopback, sends it JSON to render Vue into XML, then builds the XLSX in the same .NET process. Only the .NET port is published.
-
-In [manifest.json](examples/basic/manifest.json), the `invoice` ID points to [Invoice.vue](examples/basic/Invoice.vue). Send `{"data": {...}}`; the template receives `data` through `inject('ssrRequest').body`. Vue produces `Workbook → Worksheet → Row → Cell` markup, which ClosedXML converts to Excel.
-
-Templates are mounted separately from the engine. Restart the container after changing a pack; no image rebuild is needed. Each request runs in a fresh Vue worker.
+The manifest maps the `report` ID to `Report.vue`. .NET starts Node on loopback and sends it JSON. A fresh Vue worker produces `Workbook → Worksheet → Row → Cell` XML; .NET converts it to XLSX with ClosedXML. Only the .NET port is published.
 
 | Goal | Short guide |
 | --- | --- |
@@ -43,8 +95,8 @@ Templates are mounted separately from the engine. Restart the container after ch
 | Set up paper and headers | [Printing and frozen rows](docs/how-to/04-printing.md) |
 | Call the service from your backend | [HTTP clients and errors](docs/how-to/05-http-client.md) |
 
-Packs are **trusted executable code**. The service has no authentication: use a private network or your authenticated gateway.
+Packs are **trusted executable code**. The service has no authentication: use a private network or your authenticated gateway. Pin an image version for deployment; `latest` follows new releases.
 
-[XML reference](docs/workbook-format.md) · [API and configuration](docs/operations.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[XML reference](docs/workbook-format.md) · [API and configuration](docs/operations.md) · [Code map](docs/architecture.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 Licensed under [MIT](LICENSE). Dependencies retain [their own licenses](THIRD_PARTY_NOTICES.md).

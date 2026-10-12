@@ -6,7 +6,7 @@ import { compilePack, readManifest } from '../../src/pack.js';
 import { renderXml } from '../../src/render.js';
 import { makePack, compile, worksheet } from './helpers/pack.js';
 
-test('historical Moment locale side-effect alone configures the same imported instance', async t => {
+test('Moment locale side-effect alone configures the same imported instance', async t => {
   const fixture = await makePack(t, {
     'setup.ts': "import 'moment/locale/uk';",
     'helper.ts': "import moment from 'moment';export const month=moment('2026-01-15').format('MMMM');",

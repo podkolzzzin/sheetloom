@@ -24,17 +24,28 @@ public sealed class ServiceLifecycleTests
         using var response = await client.PostAsync("/v1/render/report", content);
         Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
         Assert.Contains("body_too_large", await response.Content.ReadAsStringAsync());
-        using var good = await client.PostAsJsonAsync("/v1/render/report", new { data = RendererTests.Xml("<Row><Cell>after oversized stream</Cell></Row>") });
+        using var good = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = WorkbookFixture.Xml("<Row><Cell>after oversized stream</Cell></Row>")
+        });
         Assert.Equal(HttpStatusCode.OK, good.StatusCode);
     }
 
     [Theory]
-    [InlineData(false)][InlineData(true)]
+    [InlineData(false)]
+    [InlineData(true)]
     public async Task PrecisionFlagSurvivesCompleteHttpResponse(bool precision)
     {
         using var factory = new ApiFactory();
         using var client = factory.CreateClient();
-        using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = RendererTests.Xml("<Row><Cell data-type=\"Number\" style=\"number-format:0.00\">2.345</Cell></Row>"), options = new { precisionAsDisplayed = precision } });
+        using var response = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = WorkbookFixture.Xml("<Row><Cell data-type=\"Number\" style=\"number-format:0.00\">2.345</Cell></Row>"),
+            options = new
+            {
+                precisionAsDisplayed = precision
+            }
+        });
         response.EnsureSuccessStatusCode();
         Assert.Equal("attachment; filename=\"report.xlsx\"", response.Content.Headers.ContentDisposition!.ToString());
         Assert.Equal("no-store", response.Headers.CacheControl!.ToString());
@@ -55,24 +66,38 @@ public sealed class ServiceLifecycleTests
         using var client = factory.CreateClient();
         for (int i = 0; i < 3; i++)
         {
-            using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = xml });
+            using var response = await client.PostAsJsonAsync("/v1/render/report", new
+            {
+                data = xml
+            });
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
             string error = await response.Content.ReadAsStringAsync();
-            Assert.DoesNotContain("private", error); Assert.DoesNotContain("Exception", error);
+            Assert.DoesNotContain("private", error);
+            Assert.DoesNotContain("Exception", error);
         }
-        using var good = await client.PostAsJsonAsync("/v1/render/report", new { data = RendererTests.Xml("<Row><Cell>recovered</Cell></Row>") });
+        using var good = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = WorkbookFixture.Xml("<Row><Cell>recovered</Cell></Row>")
+        });
         Assert.Equal(HttpStatusCode.OK, good.StatusCode);
     }
 
     [Fact]
     public async Task DiscoveryAndUnknownRoutesPreservePublicContract()
     {
-        using var factory = new ApiFactory(); using var client = factory.CreateClient();
+        using var factory = new ApiFactory();
+        using var client = factory.CreateClient();
         Assert.Equal("{\"templates\":[\"report\"]}", await client.GetStringAsync("/v1/templates"));
-        using var missing = await client.PostAsJsonAsync("/v1/render/missing", new { data = 0 });
+        using var missing = await client.PostAsJsonAsync("/v1/render/missing", new
+        {
+            data = 0
+        });
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
         Assert.Contains("unknown_template", await missing.Content.ReadAsStringAsync());
-        using var old = await client.PostAsJsonAsync("/render", new { xml = "<Workbook/>" });
+        using var old = await client.PostAsJsonAsync("/render", new
+        {
+            xml = "<Workbook/>"
+        });
         Assert.Equal(HttpStatusCode.NotFound, old.StatusCode);
         Assert.Contains("not_found", await old.Content.ReadAsStringAsync());
     }
@@ -82,7 +107,7 @@ public sealed class ServiceLifecycleTests
     {
         using var factory = new ApiFactory();
         var received = new List<string>();
-        factory.Templates.Render = (_, data, _) => { received.Add(data.GetRawText()); return Task.FromResult(RendererTests.Xml("<Row><Cell>ok</Cell></Row>")); };
+        factory.Templates.Render = (_, data, _) => { received.Add(data.GetRawText()); return Task.FromResult(WorkbookFixture.Xml("<Row><Cell>ok</Cell></Row>")); };
         using var client = factory.CreateClient();
         foreach (string data in new[] { "0", "false", "null", "[]", "\"\"" })
         {
@@ -103,21 +128,33 @@ public sealed class ServiceLifecycleTests
         var cancelled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         factory.Templates.Render = async (_, _, token) =>
         {
-            try { await Task.Delay(Timeout.Infinite, token); return ""; }
+            try
+            {
+                await Task.Delay(Timeout.Infinite, token);
+                return "";
+            }
             finally { cancelled.TrySetResult(); }
         };
         using var constrained = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
         {
-            services.RemoveAll<ServiceOptions>(); services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 150, 1, "unused"));
-            services.RemoveAll<RenderCapacity>(); services.AddSingleton(new RenderCapacity(1));
+            services.RemoveAll<ServiceOptions>();
+            services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 150, 1, "unused"));
+            services.RemoveAll<RenderCapacity>();
+            services.AddSingleton(new RenderCapacity(1));
         }));
         using var client = constrained.CreateClient();
-        using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = 0 });
+        using var response = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = 0
+        });
         Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
         Assert.Contains("render_timeout", await response.Content.ReadAsStringAsync());
         await cancelled.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        factory.Templates.Render = (_, _, _) => Task.FromResult(RendererTests.Xml("<Row><Cell>recovered</Cell></Row>"));
-        using var good = await client.PostAsJsonAsync("/v1/render/report", new { data = 0 });
+        factory.Templates.Render = (_, _, _) => Task.FromResult(WorkbookFixture.Xml("<Row><Cell>recovered</Cell></Row>"));
+        using var good = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = 0
+        });
         Assert.Equal(HttpStatusCode.OK, good.StatusCode);
     }
 
@@ -133,12 +170,18 @@ public sealed class ServiceLifecycleTests
         var renderer = new DelayedRenderer();
         using var constrained = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
         {
-            services.RemoveAll<IWorkbookRenderer>(); services.AddSingleton<IWorkbookRenderer>(renderer);
-            services.RemoveAll<ServiceOptions>(); services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 500, 1, "unused"));
-            services.RemoveAll<RenderCapacity>(); services.AddSingleton(new RenderCapacity(1));
+            services.RemoveAll<IWorkbookRenderer>();
+            services.AddSingleton<IWorkbookRenderer>(renderer);
+            services.RemoveAll<ServiceOptions>();
+            services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 500, 1, "unused"));
+            services.RemoveAll<RenderCapacity>();
+            services.AddSingleton(new RenderCapacity(1));
         }));
         using var client = constrained.CreateClient();
-        using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = 0 });
+        using var response = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = 0
+        });
         Assert.Equal(HttpStatusCode.GatewayTimeout, response.StatusCode);
         await renderer.Finished.Task.WaitAsync(TimeSpan.FromSeconds(5));
         var capacity = constrained.Services.GetRequiredService<RenderCapacity>();
@@ -151,7 +194,11 @@ public sealed class ServiceLifecycleTests
         public TaskCompletionSource Finished { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public byte[] Render(string xml, bool precisionAsDisplayed)
         {
-            try { Thread.Sleep(300); return [1, 2, 3]; }
+            try
+            {
+                Thread.Sleep(300);
+                return [1, 2, 3];
+            }
             finally { Finished.TrySetResult(); }
         }
     }
@@ -163,24 +210,37 @@ public sealed class ServiceLifecycleTests
         var renderer = new BlockingRenderer();
         using var constrained = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
         {
-            services.RemoveAll<IWorkbookRenderer>(); services.AddSingleton<IWorkbookRenderer>(renderer);
-            services.RemoveAll<ServiceOptions>(); services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 200, 1, "unused"));
-            services.RemoveAll<RenderCapacity>(); services.AddSingleton(new RenderCapacity(1));
+            services.RemoveAll<IWorkbookRenderer>();
+            services.AddSingleton<IWorkbookRenderer>(renderer);
+            services.RemoveAll<ServiceOptions>();
+            services.AddSingleton(new ServiceOptions(8080, 8081, 10485760, 200, 1, "unused"));
+            services.RemoveAll<RenderCapacity>();
+            services.AddSingleton(new RenderCapacity(1));
         }));
         using var client = constrained.CreateClient();
         try
         {
-            using var first = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+            using var first = await client.PostAsJsonAsync("/v1/render/report", new
+            {
+                data = "<Workbook/>"
+            });
             Assert.Equal(HttpStatusCode.GatewayTimeout, first.StatusCode);
             Assert.True(renderer.Entered.Task.IsCompleted);
-            using var second = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+            using var second = await client.PostAsJsonAsync("/v1/render/report", new
+            {
+                data = "<Workbook/>"
+            });
             Assert.Equal(HttpStatusCode.ServiceUnavailable, second.StatusCode);
         }
         finally { renderer.Release.Set(); }
         await renderer.Finished.Task.WaitAsync(TimeSpan.FromSeconds(5));
         var capacity = constrained.Services.GetRequiredService<RenderCapacity>();
-        for (int i = 0; i < 100 && capacity.Slots.CurrentCount == 0; i++) await Task.Delay(10);
-        using var recovered = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+        for (int i = 0; i < 100 && capacity.Slots.CurrentCount == 0; i++)
+            await Task.Delay(10);
+        using var recovered = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = "<Workbook/>"
+        });
         Assert.Equal(HttpStatusCode.OK, recovered.StatusCode);
     }
 
@@ -192,16 +252,21 @@ public sealed class ServiceLifecycleTests
         var templates = new TemplateStub { Render = (_, _, _) => throw new Exception("Should not run") };
         using var cancellation = new CancellationTokenSource();
         var input = new WaitingReadStream();
-        var context = new DefaultHttpContext(); context.Request.ContentType = "application/json";
-        context.Request.Body = input; context.RequestAborted = cancellation.Token;
+        var context = new DefaultHttpContext();
+        context.Request.ContentType = "application/json";
+        context.Request.Body = input;
+        context.RequestAborted = cancellation.Token;
         var options = new ServiceOptions(8080, 8081, 1000, 1000, 1, "unused");
-        var pending = PublicApi.Render("report", context, templates, renderer, capacity, options, NullLoggerFactory.Instance);
+        var operation = new RenderOperation(templates, renderer, capacity, options, NullLogger<RenderOperation>.Instance);
+        var pending = PublicApi.Render("report", context, templates, operation, options);
         await input.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
         cancellation.Cancel();
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => pending);
-        context.RequestAborted = CancellationToken.None; context.Request.Body = new BrokenReadStream();
-        await Assert.ThrowsAsync<IOException>(() => PublicApi.Render("report", context, templates, renderer, capacity, options, NullLoggerFactory.Instance));
-        Assert.Equal(1, capacity.Slots.CurrentCount); Assert.False(renderer.Entered.Task.IsCompleted);
+        context.RequestAborted = CancellationToken.None;
+        context.Request.Body = new BrokenReadStream();
+        await Assert.ThrowsAsync<IOException>(() => PublicApi.Render("report", context, templates, operation, options));
+        Assert.Equal(1, capacity.Slots.CurrentCount);
+        Assert.False(renderer.Entered.Task.IsCompleted);
     }
 
     private sealed class BlockingRenderer : IWorkbookRenderer
@@ -212,16 +277,26 @@ public sealed class ServiceLifecycleTests
         public byte[] Render(string xml, bool precisionAsDisplayed)
         {
             Entered.TrySetResult();
-            try { if (!Release.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException(); return [1, 2, 3]; }
+            try
+            {
+                if (!Release.Wait(TimeSpan.FromSeconds(10)))
+                    throw new TimeoutException();
+                return [1, 2, 3];
+            }
             finally { Finished.TrySetResult(); }
         }
     }
     private sealed class UnknownLengthContent(int length) : HttpContent
     {
-        protected override bool TryComputeLength(out long value) { value = 0; return false; }
+        protected override bool TryComputeLength(out long value)
+        {
+            value = 0;
+            return false;
+        }
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
         {
-            var chunk = new byte[64 * 1024]; Array.Fill(chunk, (byte)'x');
+            var chunk = new byte[64 * 1024];
+            Array.Fill(chunk, (byte)'x');
             for (int remaining = length; remaining > 0; remaining -= chunk.Length)
                 await stream.WriteAsync(chunk.AsMemory(0, Math.Min(remaining, chunk.Length)));
         }
@@ -230,7 +305,11 @@ public sealed class ServiceLifecycleTests
     {
         public TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        { Started.TrySetResult(); await Task.Delay(Timeout.Infinite, cancellationToken); return 0; }
+        {
+            Started.TrySetResult();
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            return 0;
+        }
     }
     private sealed class BrokenReadStream : MemoryStream
     {

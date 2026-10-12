@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Sheetloom.Tests;
 
-public sealed class NodeTemplateClientTests
+public sealed class TemplateClientTests
 {
     [Theory]
     [InlineData(400, 502, "renderer_failed")]
@@ -27,12 +27,14 @@ public sealed class NodeTemplateClientTests
         });
         using var data = JsonDocument.Parse("null");
         var error = await Assert.ThrowsAsync<ServiceError>(() => server.Client.RenderAsync("report", data.RootElement, CancellationToken.None));
-        Assert.Equal(expected, error.Status); Assert.Equal(code, error.Code);
+        Assert.Equal(expected, error.Status);
+        Assert.Equal(code, error.Code);
         Assert.DoesNotContain("PRIVATE", error.Message);
     }
 
     [Theory]
-    [InlineData(false)][InlineData(true)]
+    [InlineData(false)]
+    [InlineData(true)]
     public async Task DeadlineCoversHeadersAndPartialResponseBodies(bool partialBody)
     {
         int calls = 0;
@@ -41,7 +43,8 @@ public sealed class NodeTemplateClientTests
             if (Interlocked.Increment(ref calls) > 1)
             {
                 context.Response.ContentType = "application/xml";
-                await context.Response.WriteAsync("<Workbook/>"); return;
+                await context.Response.WriteAsync("<Workbook/>");
+                return;
             }
             if (partialBody)
             {
@@ -75,13 +78,15 @@ public sealed class NodeTemplateClientTests
     }
 
     [Theory]
-    [InlineData(false)][InlineData(true)]
+    [InlineData(false)]
+    [InlineData(true)]
     public async Task KnownLengthAndChunkedXmlCannotExceedByteLimit(bool knownLength)
     {
         await using var server = await StubServer.Start(async context =>
         {
             context.Response.ContentType = "application/xml";
-            if (knownLength) context.Response.ContentLength = ServiceOptions.XmlLimit + 2;
+            if (knownLength)
+                context.Response.ContentLength = ServiceOptions.XmlLimit + 2;
             await context.Response.WriteAsync(new string('ї', ServiceOptions.XmlLimit / 2 + 1));
         });
         using var data = JsonDocument.Parse("null");
@@ -117,7 +122,8 @@ public sealed class NodeTemplateClientTests
         });
         using var data = JsonDocument.Parse("null");
         var error = await Assert.ThrowsAsync<ServiceError>(() => server.Client.RenderAsync("report", data.RootElement, CancellationToken.None));
-        Assert.Equal(502, error.Status); Assert.DoesNotContain("PRIVATE", error.Message);
+        Assert.Equal(502, error.Status);
+        Assert.DoesNotContain("PRIVATE", error.Message);
     }
 
     [Fact]
@@ -131,7 +137,7 @@ public sealed class NodeTemplateClientTests
 
     private sealed class StubServer(WebApplication app, HttpClient http) : IAsyncDisposable
     {
-        public NodeTemplateClient Client { get; } = new(http);
+        public TemplateClient Client { get; } = new(http);
         public static async Task<StubServer> Start(RequestDelegate handler)
         {
             var builder = WebApplication.CreateBuilder();
@@ -140,14 +146,25 @@ public sealed class NodeTemplateClientTests
             var app = builder.Build();
             app.Run(async context =>
             {
-                try { await handler(context); }
+                try
+                {
+                    await handler(context);
+                }
                 catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested) { }
             });
             await app.StartAsync();
             var http = new HttpClient(new SocketsHttpHandler { MaxResponseDrainSize = 0, AllowAutoRedirect = false, UseProxy = false })
-            { BaseAddress = new Uri(app.Urls.Single()), Timeout = Timeout.InfiniteTimeSpan };
+            {
+                BaseAddress = new Uri(app.Urls.Single()),
+                Timeout = Timeout.InfiniteTimeSpan
+            };
             return new StubServer(app, http);
         }
-        public async ValueTask DisposeAsync() { http.Dispose(); await app.StopAsync(); await app.DisposeAsync(); }
+        public async ValueTask DisposeAsync()
+        {
+            http.Dispose();
+            await app.StopAsync();
+            await app.DisposeAsync();
+        }
     }
 }

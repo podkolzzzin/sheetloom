@@ -16,14 +16,35 @@ LoadOptions.DefaultGraphicEngine = new DefaultGraphicEngine(builder.Configuratio
 builder.Services.AddSingleton(options);
 builder.Services.AddSingleton<IWorkbookRenderer, WorkbookRenderer>();
 builder.Services.AddSingleton(new RenderCapacity(options.Concurrency));
-builder.Services.AddSingleton<ITemplateService, NodeTemplateService>();
-builder.Services.AddHostedService(services => services.GetRequiredService<ITemplateService>());
+builder.Services.AddSingleton<RenderOperation>();
+builder.Services.AddSingleton(_ => new HttpClient(new SocketsHttpHandler
+{
+    AllowAutoRedirect = false,
+    UseProxy = false,
+    MaxResponseDrainSize = 0
+})
+{
+    BaseAddress = new Uri($"http://127.0.0.1:{options.NodePort}/"),
+    Timeout = Timeout.InfiniteTimeSpan
+});
+builder.Services.AddSingleton<TemplateClient>();
+builder.Services.AddSingleton<ITemplateService>(services => services.GetRequiredService<TemplateClient>());
+builder.Services.AddHostedService<NodeProcess>();
 var app = builder.Build();
 app.Use(async (context, next) =>
 {
-    try { await next(context); }
-    catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested) { }
-    catch (ServiceError error) { await PublicApi.Error(error.Status, error.Code, error.Message).ExecuteAsync(context); }
+    try
+    {
+        await next(context);
+    }
+    catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+    {
+        // The client disconnected; there is no response to send.
+    }
+    catch (ServiceError error)
+    {
+        await PublicApi.Error(error.Status, error.Code, error.Message).ExecuteAsync(context);
+    }
     catch (BadHttpRequestException error)
     {
         await PublicApi.Error(error.StatusCode, error.StatusCode == 413 ? "body_too_large" : "invalid_request", "Invalid request").ExecuteAsync(context);

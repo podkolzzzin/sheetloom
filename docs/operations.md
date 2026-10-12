@@ -38,6 +38,8 @@ Client ← XLSX ← .NET / ClosedXML
 
 Node listens only on loopback; publish only port 8080. A Node crash stops the .NET host with a nonzero exit code. A .NET crash ends the container. Docker/orchestrator restart policy owns recovery; normal shutdown stops both processes.
 
+For a complete Compose example, copy [`examples/quickstart/`](../examples/quickstart/) and run `docker compose up --wait` inside it. The folder includes the manifest, Vue template, request JSON and every supported configuration variable. Use the curl command in its README, then `docker compose down` to stop.
+
 ## Template pack v1
 
 ```json
@@ -106,7 +108,7 @@ For local development after installing dependencies, `npm start` launches the .N
 
 The Node tests exercise pack validation, read-only compilation, imports/assets, locale setup, concurrent state isolation, HTTP validation, error privacy, capacity and real-socket deadlines. .NET tests cover the public HTTP contract, private Node transport, cancellation, capacity, workbook semantics, formatting, printing, images, XML safety and precision. The Docker suite checks real XLSX output, non-root/read-only operation, pack updates after restart, process supervision and invalid-pack startup.
 
-CI also runs a separate **Docker E2E / openpyxl** job. It sends JSON to the production container, reads returned files with an independent XLSX implementation, and checks cells/types, formulas, styles, local names, print/freeze settings, pagination, images and request isolation. It uploads synthetic workbook evidence and logs, including on failure. All gates use the source and synthetic fixtures in this repository. See [independent E2E scenarios and historical evidence](../tests/e2e/README.md), [Node regressions](test-history-node.md), and [renderer regressions](test-history-renderer.md).
+CI also runs a separate **Docker E2E / openpyxl** job. It sends JSON to the production container, reads returned files with an independent XLSX implementation, and checks cells/types, formulas, styles, local names, print/freeze settings, pagination, images and request isolation. It uploads synthetic workbook evidence and logs, including on failure. All gates use the source and synthetic fixtures in this repository. See [independent E2E scenarios](../tests/e2e/README.md) and [tests by behavior](testing.md).
 
 ## Workbook format and license
 

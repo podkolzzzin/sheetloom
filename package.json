@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "engines": { "node": ">=22.12" },
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "start": "bash scripts/start.sh",
     "test": "node --test tests/node/*.test.js",
@@ -12,7 +14,12 @@
     "demo": "bash scripts/demo.sh"
   },
   "dependencies": {
-    "@vitejs/plugin-vue": "6.0.9", "fastify": "5.12.5", "linq": "4.0.3", "moment": "2.31.0",
-    "vite": "8.3.4", "vue": "3.5.43", "vue-router": "5.4.0"
+    "@vitejs/plugin-vue": "6.0.9",
+    "fastify": "5.12.5",
+    "linq": "4.0.3",
+    "moment": "2.31.0",
+    "vite": "8.3.4",
+    "vue": "3.5.43",
+    "vue-router": "5.4.0"
   }
 }

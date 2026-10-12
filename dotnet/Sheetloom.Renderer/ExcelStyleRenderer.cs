@@ -84,16 +84,34 @@ public class ExcelStyleRenderer
         ApplyBorder(StyleKey.BorderRight, right);
         ApplyBorder(StyleKey.BorderLeft, left);
 
-        if (cssStyle.TryGet<string>(StyleKey.BorderColor, out var borderColor)) excelStyle.Border.BottomBorderColor =
-                excelStyle.Border.TopBorderColor =
-                excelStyle.Border.RightBorderColor =
-                excelStyle.Border.LeftBorderColor =
-                XLColor.FromHtml(borderColor);
+        if (cssStyle.TryGet<string>(StyleKey.BorderColor, out var borderColor))
+        {
+            var color = XLColor.FromHtml(borderColor);
+            excelStyle.Border.BottomBorderColor = color;
+            excelStyle.Border.TopBorderColor = color;
+            excelStyle.Border.RightBorderColor = color;
+            excelStyle.Border.LeftBorderColor = color;
+        }
 
-        if (cssStyle.TryGet<string>(StyleKey.BorderTopColor, out var borderTopColor)) excelStyle.Border.TopBorderColor = XLColor.FromHtml(borderTopColor);
-        if (cssStyle.TryGet<string>(StyleKey.BorderBottomColor, out var borderBottomColor)) excelStyle.Border.BottomBorderColor = XLColor.FromHtml(borderBottomColor);
-        if (cssStyle.TryGet<string>(StyleKey.BorderRightColor, out var borderRightColor)) excelStyle.Border.RightBorderColor = XLColor.FromHtml(borderRightColor);
-        if (cssStyle.TryGet<string>(StyleKey.BorderLeftColor, out var borderLeftColor)) excelStyle.Border.LeftBorderColor = XLColor.FromHtml(borderLeftColor);
+        if (cssStyle.TryGet<string>(StyleKey.BorderTopColor, out var borderTopColor))
+        {
+            excelStyle.Border.TopBorderColor = XLColor.FromHtml(borderTopColor);
+        }
+
+        if (cssStyle.TryGet<string>(StyleKey.BorderBottomColor, out var borderBottomColor))
+        {
+            excelStyle.Border.BottomBorderColor = XLColor.FromHtml(borderBottomColor);
+        }
+
+        if (cssStyle.TryGet<string>(StyleKey.BorderRightColor, out var borderRightColor))
+        {
+            excelStyle.Border.RightBorderColor = XLColor.FromHtml(borderRightColor);
+        }
+
+        if (cssStyle.TryGet<string>(StyleKey.BorderLeftColor, out var borderLeftColor))
+        {
+            excelStyle.Border.LeftBorderColor = XLColor.FromHtml(borderLeftColor);
+        }
     }
 
     private static XLAlignmentHorizontalValues ToExcelAlignment(TextAlign val)
@@ -121,7 +139,10 @@ public class ExcelStyleRenderer
 
     public static void ApplyWidth(CssStyle? style, Action<double> action)
     {
-        if (style == null) return;
+        if (style == null)
+        {
+            return;
+        }
         if (style.Value.TryGet<double>(StyleKey.Width, out var width))
         {
             action(width);
@@ -130,7 +151,10 @@ public class ExcelStyleRenderer
 
     public static void ApplyHeight(CssStyle? style, Action<double> action)
     {
-        if (style == null) return;
+        if (style == null)
+        {
+            return;
+        }
         if (style.Value.TryGet<double>(StyleKey.Height, out var height))
         {
             action(height);

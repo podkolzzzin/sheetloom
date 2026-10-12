@@ -95,9 +95,9 @@ public readonly struct CssStyle
     public CssStyle Merge(CssStyle value)
     {
         var values = _values.ToBuilder();
-        foreach (var (k, v) in value._values)
+        foreach (var (key, styleValue) in value._values)
         {
-            values[k] = v;
+            values[key] = styleValue;
         }
 
         return new CssStyle(values.ToImmutable());
@@ -109,12 +109,12 @@ public readonly struct CssStyle
         var values = _values.ToBuilder();
         foreach (var item in items)
         {
-            var r = item.Split(":").Select(x => x.Trim()).ToArray();
-            var k = r.First();
-            var v = r.Last();
-            if (_styles.TryGetValue(k, out var key))
+            var parts = item.Split(":").Select(part => part.Trim()).ToArray();
+            var name = parts.First();
+            var styleValue = parts.Last();
+            if (_styles.TryGetValue(name, out var key))
             {
-                values[key] = new StyleValue(v);
+                values[key] = new StyleValue(styleValue);
             }
         }
 
@@ -146,12 +146,12 @@ public readonly struct CssStyle
         var items = value?.Split(";") ?? [];
         foreach (var item in items)
         {
-            var r = item.Split(":").Select(x => x.Trim()).ToArray();
-            var k = r.First();
-            var v = r.Last();
-            if (_styles.TryGetValue(k, out var key))
+            var parts = item.Split(":").Select(part => part.Trim()).ToArray();
+            var name = parts.First();
+            var styleValue = parts.Last();
+            if (_styles.TryGetValue(name, out var key))
             {
-                builder[key] = new StyleValue(v);
+                builder[key] = new StyleValue(styleValue);
             }
         }
         _values = builder.ToImmutable();

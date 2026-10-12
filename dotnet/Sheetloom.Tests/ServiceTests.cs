@@ -18,7 +18,10 @@ public sealed class ServiceTests : IClassFixture<ApiFactory>
     {
         using var client = factory.CreateClient();
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/health")).StatusCode);
-        using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = RendererTests.Xml("<Row><Cell>HTTP result</Cell></Row>") });
+        using var response = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = WorkbookFixture.Xml("<Row><Cell>HTTP result</Cell></Row>")
+        });
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(PublicApi.XlsxMediaType, response.Content.Headers.ContentType!.MediaType);
         using var book = new XLWorkbook(new MemoryStream(await response.Content.ReadAsByteArrayAsync()));
@@ -55,10 +58,16 @@ public sealed class ServiceTests : IClassFixture<ApiFactory>
     public async Task RenderFailureDoesNotExposeSensitiveInputAndSlotIsReleased()
     {
         using var client = factory.CreateClient();
-        using var bad = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook secret='private-path'" });
+        using var bad = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = "<Workbook secret='private-path'"
+        });
         Assert.Equal(HttpStatusCode.UnprocessableEntity, bad.StatusCode);
         Assert.DoesNotContain("private-path", await bad.Content.ReadAsStringAsync());
-        using var good = await client.PostAsJsonAsync("/v1/render/report", new { data = RendererTests.Xml("<Row><Cell>recovered</Cell></Row>") });
+        using var good = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = WorkbookFixture.Xml("<Row><Cell>recovered</Cell></Row>")
+        });
         Assert.Equal(HttpStatusCode.OK, good.StatusCode);
     }
 
@@ -66,7 +75,10 @@ public sealed class ServiceTests : IClassFixture<ApiFactory>
     public async Task XmlByteLimitIsEnforced()
     {
         using var client = factory.CreateClient();
-        using var response = await client.PostAsJsonAsync("/v1/render/report", new { data = new string('x', ServiceOptions.XmlLimit + 1) });
+        using var response = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = new string('x', ServiceOptions.XmlLimit + 1)
+        });
         Assert.Equal(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
     }
 
@@ -84,20 +96,32 @@ public sealed class ServiceTests : IClassFixture<ApiFactory>
         var blocking = new BlockingRenderer();
         using var constrained = factory.WithWebHostBuilder(builder => builder.ConfigureServices(services =>
         {
-            services.RemoveAll<IWorkbookRenderer>(); services.AddSingleton<IWorkbookRenderer>(blocking);
-            services.RemoveAll<RenderCapacity>(); services.AddSingleton(new RenderCapacity(1));
+            services.RemoveAll<IWorkbookRenderer>();
+            services.AddSingleton<IWorkbookRenderer>(blocking);
+            services.RemoveAll<RenderCapacity>();
+            services.AddSingleton(new RenderCapacity(1));
         }));
         using var client = constrained.CreateClient();
-        var first = client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+        var first = client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = "<Workbook/>"
+        });
         try
         {
             await blocking.Entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
-            using var rejected = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+            using var rejected = await client.PostAsJsonAsync("/v1/render/report", new
+            {
+                data = "<Workbook/>"
+            });
             Assert.Equal(HttpStatusCode.ServiceUnavailable, rejected.StatusCode);
         }
         finally { blocking.Release.Set(); }
-        using var completed = await first; Assert.Equal(HttpStatusCode.OK, completed.StatusCode);
-        using var next = await client.PostAsJsonAsync("/v1/render/report", new { data = "<Workbook/>" });
+        using var completed = await first;
+        Assert.Equal(HttpStatusCode.OK, completed.StatusCode);
+        using var next = await client.PostAsJsonAsync("/v1/render/report", new
+        {
+            data = "<Workbook/>"
+        });
         Assert.Equal(HttpStatusCode.OK, next.StatusCode);
     }
 
@@ -108,7 +132,8 @@ public sealed class ServiceTests : IClassFixture<ApiFactory>
         public byte[] Render(string xml, bool precisionAsDisplayed)
         {
             Entered.TrySetResult();
-            if (!Release.Wait(TimeSpan.FromSeconds(15))) throw new TimeoutException();
+            if (!Release.Wait(TimeSpan.FromSeconds(15)))
+                throw new TimeoutException();
             return [1, 2, 3];
         }
     }

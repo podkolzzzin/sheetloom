@@ -13,7 +13,9 @@ public class ExcelFormulaRendererInstance
 
     private readonly Dictionary<string, int> _names = new();
 
-    public static void Track(BaseModel model, IXLWorksheet worksheet) { }
+    public static void Track(BaseModel model, IXLWorksheet worksheet)
+    {
+    }
 
     public void Track(BaseModel model, IXLRow row)
     {

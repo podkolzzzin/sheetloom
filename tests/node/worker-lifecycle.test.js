@@ -9,7 +9,7 @@ import { promisify } from 'node:util';
 import { renderXml } from '../../src/render.js';
 
 async function moduleFile(t, source) {
-  const root = await mkdtemp(path.join(tmpdir(), 'engine-worker-history-'));
+  const root = await mkdtemp(path.join(tmpdir(), 'sheetloom-worker-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const filename = path.join(root, 'bundle.mjs');
   await writeFile(filename, source);

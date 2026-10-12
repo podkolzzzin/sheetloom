@@ -157,4 +157,4 @@ For embedded images, set `image-src` to a base64 data URI such as `data:image/pn
 - Named-range conversion needs a colon range. Reference scope spans worksheets. Image size attributes remain unused, as described above.
 - `options.precisionAsDisplayed=true` changes the serialized Excel calculation setting (`fullPrecision=false`); it does not round every submitted numeric value in the service. Reopening/resaving with another library can drop this setting unless the consumer reapplies it.
 
-The limitations above are part of the current workbook format. Corrections are documented in [renderer regression coverage](test-history-renderer.md). The included regression tests verify emitted workbook semantics; they do not establish exact pagination in every Excel version or guarantee support for every possible Excel formula.
+The limitations above are part of the current workbook format. Coverage is described in [testing](testing.md). The included regression tests verify emitted workbook semantics; they do not establish exact pagination in every Excel version or guarantee support for every possible Excel formula.
