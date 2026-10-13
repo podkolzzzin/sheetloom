@@ -71,7 +71,7 @@ curl --fail-with-body http://localhost:8080/v1/render/report \
 
 Open `report.xlsx`: the **Report** sheet has a shaded, bold header, amounts formatted as **42.50** and **7.50**, and a bold **Total** row with a `SUM` formula. Excel calculates **50.00** when the file opens; an empty list produces numeric **0.00**. Press Ctrl+C in the Docker terminal to stop. Restart after changing a template; no image rebuild is needed.
 
-![Generated Report sheet with a shaded header, Consulting 42.50, Materials 7.50 and Total 50.00 after formula recalculation](docs/images/quickstart-report.png)
+![Generated report opened in Google Sheets, with B4 selected, Total 50.00 and =SUM($B$2:$B$3) visible in the formula bar](docs/images/quickstart-report.jpg)
 
 ## Docker Compose
 
