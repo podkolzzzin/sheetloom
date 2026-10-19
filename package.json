@@ -14,7 +14,7 @@
     "demo": "bash scripts/demo.sh"
   },
   "dependencies": {
-    "@vitejs/plugin-vue": "6.0.9",
+    "@vitejs/plugin-vue": "6.0.10",
     "fastify": "5.12.5",
     "linq": "4.0.3",
     "moment": "2.31.0",
